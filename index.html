@@ -90,7 +90,7 @@
                 const year = document.getElementById('year').value;
 
                 // Atualizar status dos carrinhos abandonados, vendas recuperadas e dinheiro recuperado com base no mês/ano
-                let statusResponse = await fetch(`https://e087b277-287a-4ff4-92e8-a32ea4585002-00-2t5s46lohir3m.janeway.replit.dev/dashboard?month=${month}&year=${year}`);
+                let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?month=${month}&year=${year}`);
                 let statusData = await statusResponse.json();
 
                 document.getElementById('carrinhos_abandonados').textContent = statusData.carrinhos_abandonados;
@@ -98,7 +98,7 @@
                 document.getElementById('total_dinheiro_recuperado').textContent = `R$ ${statusData.total_dinheiro_recuperado.toFixed(2)}`;
 
                 // Atualizar vendas pendentes com base no mês/ano
-                let vendasResponse = await fetch(`https://e087b277-287a-4ff4-92e8-a32ea4585002-00-2t5s46lohir3m.janeway.replit.dev/vendas-pendentes?month=${month}&year=${year}`);
+                let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?month=${month}&year=${year}`);
                 let vendasData = await vendasResponse.json();
 
                 let vendasPendentesDiv = document.getElementById('vendas_pendentes');
