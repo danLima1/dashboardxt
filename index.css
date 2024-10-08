@@ -710,5 +710,29 @@ main table tbody td {
 
 
 
-
+    @media screen and (max-width: 1200px) {
+        /* Ajustando o layout da tabela */
+        main .recent-orders table {
+            width: 100%;
+            table-layout: auto; /* Deixa o navegador ajustar o layout da tabela */
+        }
+    
+        main table tbody td {
+            padding: 0.5rem; /* Adiciona espaçamento entre as células */
+            text-align: left; /* Alinha o conteúdo à esquerda */
+            font-size: 1rem; /* Ajuste de fonte para ficar legível */
+        }
+    
+        main .recent-orders {
+            width: 100%;
+            margin: 1rem 0; /* Melhor espaçamento entre a tabela e outros elementos */
+        }
+        
+        /* Revendo a ocultação de colunas */
+        main table tbody tr td:last-child, 
+        main table tbody tr td:first-child {
+            display: table-cell; /* Mostrar as colunas ocultas novamente */
+        }
+    }
+    
 }
