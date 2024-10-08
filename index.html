@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="index.css">
     <!--MATERIAL ICONS-->
     <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"/>
-    <title>Dashboard Responsivo</title>
+    <title>Dashboard recuperação</title>
 </head>
 <body>
     <div class="container">
@@ -188,7 +188,7 @@ async function updateDashboard() {
         const [year, month] = selectedDate.split('-');
 
         // Buscar dados do status (carrinhos abandonados, vendas recuperadas, dinheiro recuperado)
-        let statusResponse = await fetch(`https://e087b277-287a-4ff4-92e8-a32ea4585002-00-2t5s46lohir3m.janeway.replit.dev/dashboard?month=${month}&year=${year}`);
+        let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?month=${month}&year=${year}`);
         let statusData = await statusResponse.json();
 
         // Atualizar o campo de carrinhos abandonados (sem formatação de moeda)
@@ -201,7 +201,7 @@ async function updateDashboard() {
         document.querySelector('.income h1').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
 
         // Buscar dados das vendas pendentes e atualizar tabela
-        let vendasResponse = await fetch(`https://e087b277-287a-4ff4-92e8-a32ea4585002-00-2t5s46lohir3m.janeway.replit.dev/vendas-pendentes?month=${month}&year=${year}`);
+        let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?month=${month}&year=${year}`);
         let vendasData = await vendasResponse.json();
 
         let tabelaVendas = document.querySelector('.recent-orders tbody');
