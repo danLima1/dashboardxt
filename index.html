@@ -16,7 +16,15 @@
             <h1>Painel de recuperação</h1>
 
             <div class="date">
-                <input type="date">
+                <!-- Adicionando dois campos de data: data de início e data de fim -->
+                <label for="data_inicio">Data Início:</label>
+                <input type="date" id="data_inicio">
+
+                <label for="data_fim">Data Fim:</label>
+                <input type="date" id="data_fim">
+
+                <!-- Botão para confirmar a seleção de datas -->
+                <button id="confirmar" onclick="updateDashboard()">Confirmar</button>
             </div>
 
             <div class="insights">
@@ -24,60 +32,39 @@
                     <span class="material-symbols-sharp">
                         analytics
                     </span>
-
                     <div class="middle">
                        <div class="left">
                             <h3>Carrinhos abandonados</h3>
                             <h1></h1>
                        </div> 
-
-                       <div class="progress">
-                          
-                    
-                       </div>
+                       <div class="progress"></div>
                     </div>
-                  
                 </div>
-                <!---------END OF SALES-------->
-                    <div class="expenses">
-                        <span class="material-symbols-sharp">
-                            bar_chart
-                        </span>
-    
-                        <div class="middle">
-                           <div class="left">
-                                <h3>Vendas recuperadas</h3>
-                                <h1></h1>
-                           </div> 
-    
-                           <div class="progress">
-                              
-                             
-                           </div>
+                <div class="expenses">
+                    <span class="material-symbols-sharp">
+                        bar_chart
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Vendas recuperadas</h3>
+                            <h1></h1>
                         </div>
+                        <div class="progress"></div>
                     </div>
-                   
-                    <!---------END OF EXPENSES-------->
-                        <div class="income">
-                            <span class="material-symbols-sharp">
-                                stacked_line_chart
-                            </span>
-        
-                            <div class="middle">
-                               <div class="left">
-                                    <h3>Dinheiro recuperado</h3>
-                                    <h1>R$10.864</h1>
-                               </div> 
-        
-                               <div class="progress">
-                                
-                                   
-                               </div>
-                            </div>
+                </div>
+                <div class="income">
+                    <span class="material-symbols-sharp">
+                        stacked_line_chart
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Dinheiro recuperado</h3>
+                            <h1>R$0.00</h1>
                         </div>
-                        <!---------END OF INCOME-------->
+                        <div class="progress"></div>
+                    </div>
+                </div>
             </div>
-            <!-- -------END INSIGHTS------- -->
             
             <div class="recent-orders">
                 <table>
@@ -91,62 +78,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Foldable Mini Drone</td>
-                            <td>85631</td>
-                            <td>Due</td>
-                            <td class="primary">Pending</td>
-                            <td class="primary">Details</td>
-                        </tr>
-                        <tr>
-                            <td>LARVENDER KF102 Drone</td>
-                            <td>36378</td>
-                            <td>Due</td>
-                            <td class="danger">Decline</td>
-                            <td class="primary">Details</td>
-                        </tr>
-                        <tr>
-                            <td>Ruko F11 Pro Drone</td>
-                            <td>49347</td>
-                            <td>Due</td>
-                            <td class="primary">Pending</td>
-                            <td class="primary">Details</td>
-                        </tr>
-                        <tr>
-                            <td>Drone with Camera</td>
-                            <td>96996</td>
-                            <td>Paid</td>
-                            <td class="primary">Delivired</td>
-                            <td class="primary">Details</td>
-                        </tr>
-                        <tr>
-                            <td>GPS 4k Drone</td>
-                            <td>22821</td>
-                            <td>Paid</td>
-                            <td class="primary">Delivired</td>
-                            <td class="primary">Details</td>
-                        </tr>
-                        <tr>
-                            <td>DJI Air 2S</td>
-                            <td>81475</td>
-                            <td>Due</td>
-                            <td class="primary">Pending</td>
-                            <td class="primary">Details</td>
-                        </tr>
-                        <tr>
-                            <td>Lazenge Drone</td>
-                            <td>00482</td>
-                            <td>Paid</td>
-                            <td class="primary">Delivired</td>
-                            <td class="primary">Details</td>
-                        </tr>
+                        <!-- Os dados serão atualizados dinamicamente pelo JavaScript -->
                     </tbody>
                 </table>
                 <a href="#">Mostrar mais</a>
             </div>
         </main>
-        <!-- -------------------- END MAIN -------------------- -->
-
+        
         <div class="right">
             <div class="top">
                 <button id="menu-btn">
@@ -158,79 +96,82 @@
                     <span class="material-symbols-sharp active">
                         light_mode
                     </span>
-
                     <span class="material-symbols-sharp">
                         dark_mode
                     </span>
                 </div>
-                
             </div>
-          
-            <!-- --------------------- END OF RECENT UPDATES -------------------- -->
-            
+        </div>
+
     <script src="./ordes.js"></script>
     <script src="./index.js"></script>
     <script>
-   // Carregar dados ao abrir a página
-document.addEventListener('DOMContentLoaded', () => {
-    updateDashboard();
-});
+        // Carregar dados ao abrir a página com a data atual do mês
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
 
-// Função para formatar valores em moeda brasileira
-function formatCurrency(value) {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
+            document.querySelector('#data_inicio').value = firstDay;
+            document.querySelector('#data_fim').value = lastDay;
 
-// Atualizar dashboard com base na data selecionada
-async function updateDashboard() {
-    try {
-        const selectedDate = document.querySelector('.date input').value;
-        const [year, month] = selectedDate.split('-');
-
-        // Buscar dados do status (carrinhos abandonados, vendas recuperadas, dinheiro recuperado)
-        let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?month=${month}&year=${year}`);
-        let statusData = await statusResponse.json();
-
-        // Atualizar o campo de carrinhos abandonados (sem formatação de moeda)
-        document.querySelector('.sales h1').textContent = statusData.carrinhos_abandonados;
-
-        // Atualizar o campo de vendas recuperadas (sem formatação de moeda)
-        document.querySelector('.expenses h1').textContent = statusData.vendas_recuperadas;
-
-        // Atualizar o campo de dinheiro recuperado com formatação de moeda
-        document.querySelector('.income h1').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
-
-        // Buscar dados das vendas pendentes e atualizar tabela
-        let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?month=${month}&year=${year}`);
-        let vendasData = await vendasResponse.json();
-
-        let tabelaVendas = document.querySelector('.recent-orders tbody');
-        tabelaVendas.innerHTML = '';
-
-        vendasData.forEach(venda => {
-            let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
-            let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
-
-            let row = `
-                <tr>
-                    <td>${venda.full_name}</td> <!-- Nome do cliente -->
-                    <td>${venda.produto}</td>  <!-- Nome do produto -->
-                    <td>${venda.transaction_id}</td> <!-- Código de pagamento -->
-                    <td class="${statusClass}">${statusLabel}</td>
-                </tr>
-            `;
-
-            tabelaVendas.insertAdjacentHTML('beforeend', row);
+            updateDashboard(firstDay, lastDay);
         });
 
-    } catch (error) {
-        console.error('Erro ao atualizar o dashboard:', error);
-    }
-}
+        // Função para formatar valores em moeda brasileira
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
 
-// Atualizar o dashboard a cada 10 segundos
-setInterval(updateDashboard, 5 * 60 * 1000); // Atualiza a cada 5 minutos
+        // Atualizar dashboard com base no intervalo de datas selecionado
+        async function updateDashboard(dataInicio = null, dataFim = null) {
+            try {
+                // Se não foram passadas as datas, usar as do input
+                if (!dataInicio || !dataFim) {
+                    dataInicio = document.querySelector('#data_inicio').value;
+                    dataFim = document.querySelector('#data_fim').value;
+                }
 
+                // Buscar dados do status (carrinhos abandonados, vendas recuperadas, dinheiro recuperado)
+                let statusResponse = await fetch(`https://417001fb-d166-41ba-9cde-d0b6ba62a58f-00-eoj66w29rwad.riker.replit.dev/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+                let statusData = await statusResponse.json();
+
+                // Atualizar o campo de carrinhos abandonados
+                document.querySelector('.sales h1').textContent = statusData.carrinhos_abandonados;
+
+                // Atualizar o campo de vendas recuperadas
+                document.querySelector('.expenses h1').textContent = statusData.vendas_recuperadas;
+
+                // Atualizar o campo de dinheiro recuperado com formatação de moeda
+                document.querySelector('.income h1').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
+
+                // Buscar dados das vendas pendentes e atualizar tabela
+                let vendasResponse = await fetch(`https://417001fb-d166-41ba-9cde-d0b6ba62a58f-00-eoj66w29rwad.riker.replit.dev/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+                let vendasData = await vendasResponse.json();
+
+                let tabelaVendas = document.querySelector('.recent-orders tbody');
+                tabelaVendas.innerHTML = '';
+
+                vendasData.forEach(venda => {
+                    let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
+                    let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
+
+                    let row = `
+                        <tr>
+                            <td>${venda.full_name}</td> <!-- Nome do cliente -->
+                            <td>${venda.produto}</td>  <!-- Nome do produto -->
+                            <td>${venda.transaction_id}</td> <!-- Código de pagamento -->
+                            <td class="${statusClass}">${statusLabel}</td>
+                        </tr>
+                    `;
+
+                    tabelaVendas.insertAdjacentHTML('beforeend', row);
+                });
+
+            } catch (error) {
+                console.error('Erro ao atualizar o dashboard:', error);
+            }
+        }
     </script>
     
 </body>
