@@ -29,6 +29,25 @@
     --box-shadow: 0 2rem 3rem var(--color-light);
 }
 
+input[type="date"] {
+    color: white; /* Cor do texto */
+    background-color: transparent; /* Fundo transparente */
+    border: 1px solid #ccc; /* Borda padrão */
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Altera a cor do ícone do input date */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Inverte a cor para branco */
+}
+
+/* Estilo para navegadores Mozilla */
+input[type="date"]::-moz-calendar-picker-indicator {
+    filter: invert(1);
+}
+
 .dark-theme-variables{
     --color-background: #181a1e;
     --color-white: #202528;
