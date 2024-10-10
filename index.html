@@ -133,7 +133,7 @@
                 }
 
                 // Buscar dados do status (carrinhos abandonados, vendas recuperadas, dinheiro recuperado)
-                let statusResponse = await fetch(`https://417001fb-d166-41ba-9cde-d0b6ba62a58f-00-eoj66w29rwad.riker.replit.dev/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+                let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
                 let statusData = await statusResponse.json();
 
                 // Atualizar o campo de carrinhos abandonados
@@ -146,7 +146,7 @@
                 document.querySelector('.income h1').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
 
                 // Buscar dados das vendas pendentes e atualizar tabela
-                let vendasResponse = await fetch(`https://417001fb-d166-41ba-9cde-d0b6ba62a58f-00-eoj66w29rwad.riker.replit.dev/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+                let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
                 let vendasData = await vendasResponse.json();
 
                 let tabelaVendas = document.querySelector('.recent-orders tbody');
