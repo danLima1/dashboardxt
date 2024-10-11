@@ -124,54 +124,66 @@
         }
 
         // Atualizar dashboard com base no intervalo de datas selecionado
-        async function updateDashboard(dataInicio = null, dataFim = null) {
-            try {
-                // Se não foram passadas as datas, usar as do input
-                if (!dataInicio || !dataFim) {
-                    dataInicio = document.querySelector('#data_inicio').value;
-                    dataFim = document.querySelector('#data_fim').value;
-                }
-
-                // Buscar dados do status (carrinhos abandonados, vendas recuperadas, dinheiro recuperado)
-                let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
-                let statusData = await statusResponse.json();
-
-                // Atualizar o campo de carrinhos abandonados
-                document.querySelector('.sales h1').textContent = statusData.carrinhos_abandonados;
-
-                // Atualizar o campo de vendas recuperadas
-                document.querySelector('.expenses h1').textContent = statusData.vendas_recuperadas;
-
-                // Atualizar o campo de dinheiro recuperado com formatação de moeda
-                document.querySelector('.income h1').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
-
-                // Buscar dados das vendas pendentes e atualizar tabela
-                let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
-                let vendasData = await vendasResponse.json();
-
-                let tabelaVendas = document.querySelector('.recent-orders tbody');
-                tabelaVendas.innerHTML = '';
-
-                vendasData.forEach(venda => {
-                    let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
-                    let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
-
-                    let row = `
-                        <tr>
-                            <td>${venda.full_name}</td> <!-- Nome do cliente -->
-                            <td>${venda.produto}</td>  <!-- Nome do produto -->
-                            <td>${venda.transaction_id}</td> <!-- Código de pagamento -->
-                            <td class="${statusClass}">${statusLabel}</td>
-                        </tr>
-                    `;
-
-                    tabelaVendas.insertAdjacentHTML('beforeend', row);
-                });
-
-            } catch (error) {
-                console.error('Erro ao atualizar o dashboard:', error);
-            }
+       // Atualizar dashboard com base no intervalo de datas selecionado
+async function updateDashboard(dataInicio = null, dataFim = null) {
+    try {
+        // Se não foram passadas as datas, usar as do input
+        if (!dataInicio || !dataFim) {
+            dataInicio = document.querySelector('#data_inicio').value;
+            dataFim = document.querySelector('#data_fim').value;
         }
+
+        // Buscar dados do status (carrinhos abandonados, vendas recuperadas, dinheiro recuperado)
+        let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+        let statusData = await statusResponse.json();
+
+        // Atualizar o campo de carrinhos abandonados
+        document.querySelector('.sales h1').textContent = statusData.carrinhos_abandonados;
+
+        // Atualizar o campo de vendas recuperadas
+        document.querySelector('.expenses h1').textContent = statusData.vendas_recuperadas;
+
+        // Atualizar o campo de dinheiro recuperado com formatação de moeda
+        document.querySelector('.income h1').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
+
+        // Buscar dados das vendas pendentes e atualizar tabela
+        let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+        let vendasData = await vendasResponse.json();
+
+        // Ordenar os dados colocando os itens com status 'recuperado' no topo
+        vendasData.sort((a, b) => {
+            if (a.status === 'recuperado' && b.status !== 'recuperado') {
+                return -1; // a deve vir antes de b
+            } else if (a.status !== 'recuperado' && b.status === 'recuperado') {
+                return 1; // b deve vir antes de a
+            }
+            return 0; // sem alteração na ordem
+        });
+
+        let tabelaVendas = document.querySelector('.recent-orders tbody');
+        tabelaVendas.innerHTML = '';
+
+        vendasData.forEach(venda => {
+            let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
+            let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
+
+            let row = `
+                <tr>
+                    <td>${venda.full_name}</td> <!-- Nome do cliente -->
+                    <td>${venda.produto}</td>  <!-- Nome do produto -->
+                    <td>${venda.transaction_id}</td> <!-- Código de pagamento -->
+                    <td class="${statusClass}">${statusLabel}</td>
+                </tr>
+            `;
+
+            tabelaVendas.insertAdjacentHTML('beforeend', row);
+        });
+
+    } catch (error) {
+        console.error('Erro ao atualizar o dashboard:', error);
+    }
+}
+
     </script>
     
 </body>
