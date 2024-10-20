@@ -15,28 +15,29 @@
         <main>
             <h1>Painel de recuperação</h1>
 
-            <div class="controls">
-                <div class="date">
-                    <label for="data_inicio">Data Início:</label>
-                    <input type="date" id="data_inicio">
+            <div class="date">
+                <!-- Adicionando dois campos de data: data de início e data de fim -->
+                <label for="data_inicio">Data Início:</label>
+                <input type="date" id="data_inicio">
 
-                    <label for="data_fim">Data Fim:</label>
-                    <input type="date" id="data_fim">
-                </div>
+                <label for="data_fim">Data Fim:</label>
+                <input type="date" id="data_fim">
 
-                <!-- Botões de controle para filtrar os pedidos -->
-                <div class="tabs">
-                    <button id="all-orders-btn" class="tab-btn active" onclick="updateDashboard()">Todos os Pedidos</button>
-                    <button id="recuperados-btn" class="tab-btn" onclick="updateRecuperados()">Recuperados</button>
-                </div>
-                
                 <!-- Botão para confirmar a seleção de datas -->
-                <button id="confirmar" class="confirm-btn" onclick="updateDashboard()">Confirmar</button>
+                <button id="confirmar" onclick="updateDashboard()">Confirmar</button>
+            </div>
+
+            <!-- Adicionando a aba de "Recuperados" -->
+            <div class="tabs">
+                <button id="all-orders-btn" class="tab-btn active" onclick="updateDashboard()">Todos os Pedidos</button>
+                <button id="recuperados-btn" class="tab-btn" onclick="updateRecuperados()">Recuperados</button>
             </div>
 
             <div class="insights">
                 <div class="sales">
-                    <span class="material-symbols-sharp">analytics</span>
+                    <span class="material-symbols-sharp">
+                        analytics
+                    </span>
                     <div class="middle">
                        <div class="left">
                             <h3>Carrinhos abandonados</h3>
@@ -46,7 +47,9 @@
                     </div>
                 </div>
                 <div class="expenses">
-                    <span class="material-symbols-sharp">bar_chart</span>
+                    <span class="material-symbols-sharp">
+                        bar_chart
+                    </span>
                     <div class="middle">
                         <div class="left">
                             <h3>Vendas recuperadas</h3>
@@ -56,7 +59,9 @@
                     </div>
                 </div>
                 <div class="income">
-                    <span class="material-symbols-sharp">stacked_line_chart</span>
+                    <span class="material-symbols-sharp">
+                        stacked_line_chart
+                    </span>
                     <div class="middle">
                         <div class="left">
                             <h3>Dinheiro recuperado</h3>
@@ -78,6 +83,7 @@
                             <th>Ações</th> <!-- Adicionado -->
                         </tr>
                     </thead>
+
                     <tbody>
                         <!-- Os dados serão atualizados dinamicamente pelo JavaScript -->
                     </tbody>
@@ -85,6 +91,24 @@
                 <a href="#">Mostrar mais</a>
             </div>
         </main>
+        
+        <div class="right">
+            <div class="top">
+                <button id="menu-btn">
+                    <span class="material-symbols-sharp">
+                        menu
+                    </span>
+                </button>
+                <div class="themeToggler">
+                    <span class="material-symbols-sharp active">
+                        light_mode
+                    </span>
+                    <span class="material-symbols-sharp">
+                        dark_mode
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Seus scripts -->
