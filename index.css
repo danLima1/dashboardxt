@@ -755,3 +755,58 @@ main table tbody td {
     }
     
 }
+/* Controle principal que contém data e botões */
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+/* Ajusta a largura da data e dos botões de aba */
+.controls .date {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.controls .tabs {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Botões de controle */
+.tab-btn {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-1);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.tab-btn:hover {
+    background-color: var(--color-primary-variant);
+}
+
+.tab-btn.active {
+    background-color: var(--color-primary-variant);
+}
+
+/* Botão confirmar para ficar alinhado */
+.confirm-btn {
+    background-color: var(--color-success);
+    color: var(--color-white);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-1);
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.confirm-btn:hover {
+    background-color: var(--color-primary-variant);
+}
