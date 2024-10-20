@@ -108,12 +108,19 @@
     <!-- Seus scripts -->
     <script src="./ordes.js"></script>
     <script src="./index.js"></script>
-   <script>
+<script>
     // Função para formatar a data no padrão brasileiro (dd/mm/yyyy)
     function formatDateBR(dateStr) {
         if (!dateStr) return 'N/A';
         const date = new Date(dateStr);
         return date.toLocaleDateString('pt-BR');
+    }
+
+    // Função para comparar duas datas, usada para ordenar cronologicamente
+    function compareDates(a, b) {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return dateB - dateA; // Ordem decrescente, mais recente primeiro
     }
 
     // Carregar dados ao abrir a página com a data atual do mês
@@ -159,14 +166,11 @@
             let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
             let vendasData = await vendasResponse.json();
 
-            // Ordenar os dados colocando os itens com status 'recuperado' no topo
+            // Ordenar os dados pela data (recuperação ou abandono) mais recente primeiro
             vendasData.sort((a, b) => {
-                if (a.status === 'recuperado' && b.status !== 'recuperado') {
-                    return -1; // a deve vir antes de b
-                } else if (a.status !== 'recuperado' && b.status === 'recuperado') {
-                    return 1; // b deve vir antes de a
-                }
-                return 0; // sem alteração na ordem
+                let dataA = a.status === 'recuperado' ? a.data_recuperacao : a.data_abandono;
+                let dataB = b.status === 'recuperado' ? b.data_recuperacao : b.data_abandono;
+                return compareDates(dataA, dataB); // Ordem cronológica decrescente
             });
 
             let tabelaVendas = document.querySelector('.recent-orders tbody');
