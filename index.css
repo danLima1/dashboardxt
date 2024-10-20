@@ -788,11 +788,11 @@ main table tbody td {
 }
 
 .tab-btn:hover {
-    background-color: var(--color-primary-variant);
+    background-color: #d1d2d9;
 }
 
 .tab-btn.active {
-    background-color: var(--color-primary-variant);
+    background-color: #d1d2d9;
 }
 
 /* Botão confirmar para ficar alinhado */
