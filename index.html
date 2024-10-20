@@ -108,159 +108,168 @@
     <!-- Seus scripts -->
     <script src="./ordes.js"></script>
     <script src="./index.js"></script>
-    <script>
-        // Carregar dados ao abrir a página com a data atual do mês
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+   <script>
+    // Função para formatar a data no padrão brasileiro (dd/mm/yyyy)
+    function formatDateBR(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('pt-BR');
+    }
 
-            document.querySelector('#data_inicio').value = firstDay;
-            document.querySelector('#data_fim').value = lastDay;
+    // Carregar dados ao abrir a página com a data atual do mês
+    document.addEventListener('DOMContentLoaded', () => {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
 
-            updateDashboard(firstDay, lastDay);
-        });
+        document.querySelector('#data_inicio').value = firstDay;
+        document.querySelector('#data_fim').value = lastDay;
 
-        // Função para formatar valores em moeda brasileira
-        function formatCurrency(value) {
-            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
+        updateDashboard(firstDay, lastDay);
+    });
 
-        // Atualizar dashboard com base no intervalo de datas selecionado
-        async function updateDashboard(dataInicio = null, dataFim = null) {
-            try {
-                // Se não foram passadas as datas, usar as do input
-                if (!dataInicio || !dataFim) {
-                    dataInicio = document.querySelector('#data_inicio').value;
-                    dataFim = document.querySelector('#data_fim').value;
+    // Função para formatar valores em moeda brasileira
+    function formatCurrency(value) {
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Atualizar dashboard com base no intervalo de datas selecionado
+    async function updateDashboard(dataInicio = null, dataFim = null) {
+        try {
+            // Se não foram passadas as datas, usar as do input
+            if (!dataInicio || !dataFim) {
+                dataInicio = document.querySelector('#data_inicio').value;
+                dataFim = document.querySelector('#data_fim').value;
+            }
+
+            // Buscar dados do status (carrinhos abandonados, vendas recuperadas, dinheiro recuperado)
+            let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+            let statusData = await statusResponse.json();
+
+            // Atualizar o campo de carrinhos abandonados
+            document.querySelector('.sales h1').textContent = statusData.carrinhos_abandonados;
+
+            // Atualizar o campo de vendas recuperadas
+            document.querySelector('.expenses h1').textContent = statusData.vendas_recuperadas;
+
+            // Atualizar o campo de dinheiro recuperado com formatação de moeda
+            document.querySelector('.income h1').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
+
+            // Buscar dados das vendas pendentes e atualizar tabela
+            let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+            let vendasData = await vendasResponse.json();
+
+            // Ordenar os dados colocando os itens com status 'recuperado' no topo
+            vendasData.sort((a, b) => {
+                if (a.status === 'recuperado' && b.status !== 'recuperado') {
+                    return -1; // a deve vir antes de b
+                } else if (a.status !== 'recuperado' && b.status === 'recuperado') {
+                    return 1; // b deve vir antes de a
+                }
+                return 0; // sem alteração na ordem
+            });
+
+            let tabelaVendas = document.querySelector('.recent-orders tbody');
+            tabelaVendas.innerHTML = '';
+
+            vendasData.forEach(venda => {
+                let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
+                let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
+
+                // Determinar se o botão deve ser mostrado
+                let showButton = venda.status !== 'recuperado'; // Mostrar apenas se o status não for 'Pago' (recuperado)
+
+                // Exibir a data correspondente de abandono ou recuperação e formatá-la
+                let data = venda.status === 'recuperado' ? venda.data_recuperacao : venda.data_abandono;
+                let dataFormatada = formatDateBR(data); // Formatar data no padrão brasileiro
+
+                // Verificar se o e-mail foi reenviado nos últimos 2 dias
+                let buttonText = 'Reenviar E-mail';
+                let buttonStyle = 'background-color: #7380ec; color: #fff; padding: 0.5rem 1rem; border-radius: 0.4rem; cursor: pointer; font-size: 1rem; border: none;';
+                let buttonDisabled = '';
+                if (venda.last_email_resend) {
+                    let lastEmailDate = new Date(venda.last_email_resend);
+                    let now = new Date();
+                    let diffDays = (now - lastEmailDate) / (1000 * 60 * 60 * 24);
+                    if (diffDays < 2) {
+                        // E-mail foi reenviado nos últimos 2 dias
+                        buttonText = 'Sucesso';
+                        buttonStyle = 'background-color: #41f1b6; color: #fff; padding: 0.5rem 1rem; border-radius: 0.4rem; font-size: 1rem; border: none;';
+                        buttonDisabled = 'disabled';
+                    }
                 }
 
-                // Buscar dados do status (carrinhos abandonados, vendas recuperadas, dinheiro recuperado)
-                let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
-                let statusData = await statusResponse.json();
-
-                // Atualizar o campo de carrinhos abandonados
-                document.querySelector('.sales h1').textContent = statusData.carrinhos_abandonados;
-
-                // Atualizar o campo de vendas recuperadas
-                document.querySelector('.expenses h1').textContent = statusData.vendas_recuperadas;
-
-                // Atualizar o campo de dinheiro recuperado com formatação de moeda
-                document.querySelector('.income h1').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
-
-                // Buscar dados das vendas pendentes e atualizar tabela
-                let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
-                let vendasData = await vendasResponse.json();
-
-                // Ordenar os dados colocando os itens com status 'recuperado' no topo
-                vendasData.sort((a, b) => {
-                    if (a.status === 'recuperado' && b.status !== 'recuperado') {
-                        return -1; // a deve vir antes de b
-                    } else if (a.status !== 'recuperado' && b.status === 'recuperado') {
-                        return 1; // b deve vir antes de a
-                    }
-                    return 0; // sem alteração na ordem
-                });
-
-                let tabelaVendas = document.querySelector('.recent-orders tbody');
-                tabelaVendas.innerHTML = '';
-
-                vendasData.forEach(venda => {
-                    let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
-                    let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
-
-                    // Determinar se o botão deve ser mostrado
-                    let showButton = venda.status !== 'recuperado'; // Mostrar apenas se o status não for 'Pago' (recuperado)
-
-                    // Exibir a data correspondente de abandono ou recuperação
-                    let data = venda.status === 'recuperado' ? venda.data_recuperacao : venda.data_abandono;
-
-                    // Verificar se o e-mail foi reenviado nos últimos 2 dias
-                    let buttonText = 'Reenviar E-mail';
-                    let buttonStyle = 'background-color: #7380ec; color: #fff; padding: 0.5rem 1rem; border-radius: 0.4rem; cursor: pointer; font-size: 1rem; border: none;';
-                    let buttonDisabled = '';
-                    if (venda.last_email_resend) {
-                        let lastEmailDate = new Date(venda.last_email_resend);
-                        let now = new Date();
-                        let diffDays = (now - lastEmailDate) / (1000 * 60 * 60 * 24);
-                        if (diffDays < 2) {
-                            // E-mail foi reenviado nos últimos 2 dias
-                            buttonText = 'Sucesso';
-                            buttonStyle = 'background-color: #41f1b6; color: #fff; padding: 0.5rem 1rem; border-radius: 0.4rem; font-size: 1rem; border: none;';
-                            buttonDisabled = 'disabled';
-                        }
-                    }
-
-                    let buttonHTML = '';
-                    if (showButton) {
-                        buttonHTML = `
-                            <button
-                                class="resend-email-btn"
-                                data-transaction-id="${venda.transaction_id}"
-                                style="${buttonStyle}"
-                                ${buttonDisabled}
-                            >
-                                ${buttonText}
-                            </button>
-                        `;
-                    }
-
-                    let row = `
-                        <tr>
-                            <td>${venda.full_name}</td>
-                            <td>${data}</td> <!-- Exibe a data de abandono ou recuperação -->
-                            <td>${venda.transaction_id}</td>
-                            <td class="${statusClass}">${statusLabel}</td>
-                            <td>
-                                ${buttonHTML}
-                            </td>
-                        </tr>
+                let buttonHTML = '';
+                if (showButton) {
+                    buttonHTML = `
+                        <button
+                            class="resend-email-btn"
+                            data-transaction-id="${venda.transaction_id}"
+                            style="${buttonStyle}"
+                            ${buttonDisabled}
+                        >
+                            ${buttonText}
+                        </button>
                     `;
+                }
 
-                    tabelaVendas.insertAdjacentHTML('beforeend', row);
-                });
+                let row = `
+                    <tr>
+                        <td>${venda.full_name}</td>
+                        <td>${dataFormatada}</td> <!-- Exibe a data formatada -->
+                        <td>${venda.transaction_id}</td>
+                        <td class="${statusClass}">${statusLabel}</td>
+                        <td>
+                            ${buttonHTML}
+                        </td>
+                    </tr>
+                `;
 
-                // Adicionar event listeners aos botões após inserir as linhas
-                document.querySelectorAll('.resend-email-btn').forEach(button => {
-                    button.addEventListener('click', async (event) => {
-                        let transactionId = event.target.getAttribute('data-transaction-id');
-                        let originalText = event.target.textContent;
+                tabelaVendas.insertAdjacentHTML('beforeend', row);
+            });
 
-                        // Desabilitar o botão enquanto a requisição está em andamento
-                        event.target.disabled = true;
-                        event.target.textContent = 'Enviando...';
+            // Adicionar event listeners aos botões após inserir as linhas
+            document.querySelectorAll('.resend-email-btn').forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    let transactionId = event.target.getAttribute('data-transaction-id');
+                    let originalText = event.target.textContent;
 
-                        try {
-                            // Chamar o endpoint para reenviar o e-mail
-                            let response = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/resend-email/${transactionId}`, {
-                                method: 'POST'
-                            });
-                            let data = await response.json();
+                    // Desabilitar o botão enquanto a requisição está em andamento
+                    event.target.disabled = true;
+                    event.target.textContent = 'Enviando...';
 
-                            if (data.status === 'success') {
-                                event.target.textContent = 'Sucesso';
-                                event.target.style.backgroundColor = '#41f1b6'; // Cor de sucesso
-                                // Não precisamos reativar o botão, pois ele deve permanecer como "Sucesso" por 2 dias
-                            } else {
-                                event.target.textContent = 'Falha';
-                                event.target.style.backgroundColor = '#ff7782'; // Cor de falha
-                                event.target.disabled = false; // Reativar o botão para tentar novamente
-                            }
-                        } catch (error) {
-                            console.error('Erro ao reenviar e-mail:', error);
+                    try {
+                        // Chamar o endpoint para reenviar o e-mail
+                        let response = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/resend-email/${transactionId}`, {
+                            method: 'POST'
+                        });
+                        let data = await response.json();
+
+                        if (data.status === 'success') {
+                            event.target.textContent = 'Sucesso';
+                            event.target.style.backgroundColor = '#41f1b6'; // Cor de sucesso
+                            // Não precisamos reativar o botão, pois ele deve permanecer como "Sucesso" por 2 dias
+                        } else {
                             event.target.textContent = 'Falha';
                             event.target.style.backgroundColor = '#ff7782'; // Cor de falha
                             event.target.disabled = false; // Reativar o botão para tentar novamente
                         }
-                    });
+                    } catch (error) {
+                        console.error('Erro ao reenviar e-mail:', error);
+                        event.target.textContent = 'Falha';
+                        event.target.style.backgroundColor = '#ff7782'; // Cor de falha
+                        event.target.disabled = false; // Reativar o botão para tentar novamente
+                    }
                 });
+            });
 
 
-            } catch (error) {
-                console.error('Erro ao atualizar o dashboard:', error);
-            }
+        } catch (error) {
+            console.error('Erro ao atualizar o dashboard:', error);
         }
-    </script>
+    }
+</script>
+
     <script src="script.js"></script>
 </body>
 </html>
