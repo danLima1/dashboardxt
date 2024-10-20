@@ -71,7 +71,7 @@
                     <thead>
                         <tr>
                             <th>Nome do cliente</th>
-                            <th>Nome do Produto</th>
+                            <th>Data</th> <!-- Alterado de "Nome do Produto" para "Data" -->
                             <th>Código Pagamento</th>
                             <th>Status</th>
                             <th>Ações</th> <!-- Adicionado -->
@@ -172,6 +172,9 @@
                     // Determinar se o botão deve ser mostrado
                     let showButton = venda.status !== 'recuperado'; // Mostrar apenas se o status não for 'Pago' (recuperado)
 
+                    // Exibir a data correspondente de abandono ou recuperação
+                    let data = venda.status === 'recuperado' ? venda.data_recuperacao : venda.data_abandono;
+
                     // Verificar se o e-mail foi reenviado nos últimos 2 dias
                     let buttonText = 'Reenviar E-mail';
                     let buttonStyle = 'background-color: #7380ec; color: #fff; padding: 0.5rem 1rem; border-radius: 0.4rem; cursor: pointer; font-size: 1rem; border: none;';
@@ -205,7 +208,7 @@
                     let row = `
                         <tr>
                             <td>${venda.full_name}</td>
-                            <td>${venda.produto}</td>
+                            <td>${data}</td> <!-- Exibe a data de abandono ou recuperação -->
                             <td>${venda.transaction_id}</td>
                             <td class="${statusClass}">${statusLabel}</td>
                             <td>
