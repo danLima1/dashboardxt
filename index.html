@@ -7,95 +7,40 @@
     <title>Dashboard Recuperação</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Koulen&family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        
-        /* Ajustes para o seletor */
         select {
             color: var(--color-dark-variant);
             background-color: var(--color-light);
             border: 1px solid var(--color-dark-variant);
         }
+
         select option {
             color: var(--color-dark);
         }
 
-        /* Ajustes de responsividade para telas pequenas, como iPhone 11 */
-        @media screen and (max-width: 828px) {
-            /* Ajustes gerais de layout */
+        @media screen and (max-width: 768px) {
             .container {
                 width: 100%;
                 padding: 10px;
             }
+
             .controls {
                 flex-direction: column;
                 gap: 15px;
-                width: 100%;
             }
+
             .date,
             .tabs {
                 flex-direction: column;
                 width: 100%;
             }
-            /* Ajustar botões de controle para ocupar toda a largura */
-            .confirm-btn {
-                width: 100%;
-            }
+
             .metric {
                 width: 100%;
                 margin-bottom: 20px;
             }
-            /* Tamanho de fonte e espaçamento reduzidos */
-            h1, h2, h3 {
-                font-size: 1.2rem;
-            }
+
             .recent-orders table {
                 font-size: 0.8rem;
-            }
-            /* A tabela deve se ajustar bem ao tamanho da tela menor */
-            .recent-orders table th, 
-            .recent-orders table td {
-                padding: 8px;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Ajustes adicionais para telas menores que 768px */
-        @media screen and (max-width: 768px) {
-            .insights {
-                flex-direction: column;
-                align-items: center;
-            }
-            .metric {
-                width: 100%;
-                margin-bottom: 15px;
-            }
-            .recent-orders table th, 
-            .recent-orders table td {
-                padding: 8px;
-            }
-        }
-
-        /* Ajustes específicos para iPhone 11 e telas com largura menor que 428px */
-        @media screen and (max-width: 428px) {
-            .controls {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .date {
-                width: 100%;
-            }
-            .tabs {
-                width: 100%;
-            }
-            /* Tabelas mais compactas */
-            .recent-orders table {
-                font-size: 0.7rem;
-            }
-            /* Ajuste de tamanho de fonte e margens para métricas */
-            .metric h3 {
-                font-size: 1rem;
-            }
-            .metric h1 {
-                font-size: 1.5rem;
             }
         }
     </style>
@@ -302,8 +247,18 @@
             const valorMedioRecuperacao = statusData.total_dinheiro_recuperado / statusData.vendas_recuperadas;
             document.querySelector('#valorMedioRecuperacao').textContent = formatCurrency(valorMedioRecuperacao);
 
-            const tempoMedioRecuperacao = "em desenvolvimento";
-            document.querySelector('#tempoMedioRecuperacao').textContent = tempoMedioRecuperacao;
+            const tempoMedioRecuperacao = statusData.tempo_medio_recuperacao;
+            const diasInteiros = Math.floor(tempoMedioRecuperacao);
+            const horas = Math.round((tempoMedioRecuperacao - diasInteiros) * 24);
+
+            let displayTempoRecuperacao;
+            if (diasInteiros > 0) {
+                displayTempoRecuperacao = `${diasInteiros} dias`;
+            } else {
+                displayTempoRecuperacao = `${horas} horas`;
+            }
+
+            document.querySelector('#tempoMedioRecuperacao').textContent = displayTempoRecuperacao;
         }
 
         function exportToCSV() {
