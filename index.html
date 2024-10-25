@@ -244,9 +244,9 @@
             const taxaRecuperacao = (statusData.vendas_recuperadas / statusData.carrinhos_abandonados) * 100;
             document.querySelector('#taxaRecuperacao').textContent = taxaRecuperacao.toFixed(2) + '%';
 
-            const valorMedioRecuperacao = statusData.total_dinheiro_recuperado / statusData.vendas_recuperada;
+             const valorMedioRecuperacao = statusData.total_dinheiro_recuperado / statusData.vendas_recuperadas;
             document.querySelector('#valorMedioRecuperacao').textContent = formatCurrency(valorMedioRecuperacao);
-
+            
             const tempoMedioRecuperacao = statusData.tempo_medio_recuperacao;
             const diasInteiros = Math.floor(tempoMedioRecuperacao);
             const horas = Math.round((tempoMedioRecuperacao - diasInteiros) * 24);
