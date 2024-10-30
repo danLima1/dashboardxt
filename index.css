@@ -4,12 +4,18 @@
 :root{
     /* -----COLOR PALETTE----- */
     --color-primary: #7380ec;
+    --color-secondary: #5c6bc0;
+    --color-white: #fff;
+    --color-light: #e8eaf6;
+    --color-dark: #37474f;
+    --color-success: #66bb6a;
+    --color-danger: #e57373;
     --color-danger: #ff7782;
     --color-sucess: #41f1b6;
     --color-warning: #ffbb55;
     --color-white: #fff;
     --color-info-dark: #7d8da1;
-    --color-dark: #363949;
+    --color-dark: #fdad00;
     --color-light: rgba(132, 139, 200, 0.18);
     --color-primary-variant: #111e88;
     --color-dark-variant: #677483;
@@ -78,7 +84,6 @@ body{
     font-family: poppins, sans-serif;
     font-size: 0.88rem;
     background: var(--color-background);
-    user-select: none;
     overflow-x: hidden;
     color: var(--color-dark);
 }
@@ -390,7 +395,7 @@ main .recent-orders{
      border-radius: var(--card-border-radius);
      padding: var(--card-padding);
      text-align: center;
-     box-shadow: var(--box-shadow);
+    
      transition: all 300ms ease;
  }
 
@@ -810,3 +815,327 @@ main table tbody td {
 .confirm-btn:hover {
     background-color: var(--color-primary-variant);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**********************************CSS************************************************************/
+
+select {
+    color: var(--color-dark-variant);
+    background-color: var(--color-light);
+    border: 1px solid var(--color-dark-variant);
+}
+select option {
+    color: var(--color-dark);
+}
+@media screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+    .controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .date,
+    .tabs {
+        flex-direction: column;
+        width: 100%;
+    }
+    .metric {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .recent-orders table {
+        font-size: 0.8rem;
+    }
+}
+/* Estilos para os formulários */
+#loginContainer, #registerContainer {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: var(--color-white);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    display: none;
+}
+#loginContainer.active, #registerContainer.active {
+    display: block;
+}
+#loginContainer h2, #registerContainer h2 {
+    text-align: center;
+    color: var(--color-primary);
+}
+#loginContainer form, #registerContainer form {
+    display: flex;
+    flex-direction: column;
+}
+#loginContainer form input, #registerContainer form input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid var(--color-light);
+    border-radius: 5px;
+}
+#loginContainer form button, #registerContainer form button {
+    padding: 10px;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 77px;
+}
+#loginContainer p, #registerContainer p {
+    text-align: center;
+    margin-top: 10px;
+}
+#loginContainer p a, #registerContainer p a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+/* Estilo para o botão de logout */
+#logoutButton {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.modal {
+display: none;
+position: fixed;
+z-index: 10;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+background-color: var(--color-white);
+margin: 5% auto;
+padding: 20px;
+border: 1px solid var(--color-light);
+border-radius: 8px;
+max-width: 80%; /* Largura maior em desktops */
+box-shadow: var(--box-shadow);
+}
+
+/* Ajustes para responsividade */
+@media screen and (max-width: 768px) {
+.modal-content {
+    max-width: 90%;
+    margin-top: 20%;
+}
+}
+
+@media screen and (max-width: 480px) {
+.modal-content {
+    max-width: 95%;
+    margin-top: 30%;
+    padding: 15px;
+}
+.confirm-btn  {
+    width: 100%;
+}
+#openWebhooksModal{
+    width: 100%;
+}
+#logoutButton{
+    width: 100%;
+}
+}
+
+/* Estilo do cabeçalho do modal */
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.modal-header h2 {
+font-size: 1.5rem;
+color: var(--color-primary);
+margin: 0;
+}
+
+.close-modal {
+font-size: 1.8rem;
+color: var(--color-dark);
+cursor: pointer;
+}
+
+/* Estilo da área de conteúdo do modal */
+.modal-body {
+font-size: 1rem;
+line-height: 1.5;
+}
+
+.modal-body code {
+display: block;
+background: var(--color-light);
+padding: 10px;
+border-radius: 5px;
+color: var(--color-primary);
+font-weight: 500;
+margin-bottom: 15px;
+word-wrap: break-word; /* Ajusta a largura para caber no modal */
+}
+#openWebhooksModal {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+
+
+
+/* Containers */
+#loginContainer, #registerContainer {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--color-white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+    transition: opacity 0.3s;
+}
+
+
+
+/* Formulários */
+form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: border 0.3s;
+}
+
+form input:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+#exportarCSV
+{
+    width: 100%;
+
+    padding: 10px 20px;
+    margin-top: 1rem;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+button {
+    width: 10%;
+
+    padding: 10px 20px;
+    margin-top: 1rem;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+
+button:hover {
+    background-color: var(--color-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Links */
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Dashboard */
+
+
+.controls, .insights {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.metric {
+    background-color: var(--color-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+
+
+
+/* Tabela de Pedidos Recentes */
+
+
+thead th {
+    background-color: var(--color-light);
+    color: var(--color-dark);
+    padding: 14px;
+    
+}
+
+
+.status-pendente {
+    color: var(--color-danger);
+    font-weight: 600;
+}
+
+.status-pago {
+    color: var(--color-success);
+    font-weight: 600;
+}
+
+
+
+
