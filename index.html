@@ -2,53 +2,75 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Recuperação</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Koulen&family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        select {
-            color: var(--color-dark-variant);
-            background-color: var(--color-light);
-            border: 1px solid var(--color-dark-variant);
-        }
-
-        select option {
-            color: var(--color-dark);
-        }
-
-        @media screen and (max-width: 768px) {
-            .container {
-                width: 100%;
-                padding: 10px;
-            }
-
-            .controls {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .date,
-            .tabs {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .metric {
-                width: 100%;
-                margin-bottom: 20px;
-            }
-
-            .recent-orders table {
-                font-size: 0.8rem;
-            }
-        }
+        
     </style>
 </head>
 <body>
-    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <!-- Containers de Login e Registro -->
+    <div id="loginContainer">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" name="username_or_email" placeholder="Celular" required>
+            <input type="password" name="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <p>Não tem uma conta? <a href="#" id="showRegister">Registre-se</a></p>
+    </div>
+
+    <div id="registerContainer">
+        <h2>Registro</h2>
+        <form id="registerForm">
+            <input type="text" name="username" placeholder="Celular" required>
+            <input type="email" name="email" placeholder="E-mail" required>
+            <input type="password" name="password" placeholder="Senha" required>
+            <button type="submit">Registrar</button>
+        </form>
+        <p>Já tem uma conta? <a href="#" id="showLogin">Faça login</a></p>
+    </div>
+
+    <!-- Container da Dashboard -->
+    <div class="container" id="dashboardContainer" style="max-width: 1200px; margin: 0 auto; padding: 20px; display: none;">
         <main>
             <h1 style="color: var(--color-primary); font-size: 2rem; font-weight: 800;">Painel de recuperação</h1>
+
+            <!-- Botão de Logout -->
+            <button id="logoutButton">Logout</button>
+
+            <!-- Exibição dos webhooks do usuário -->
+            <div id="webhooksInfo" style="margin-top: 20px; display: none;">
+                <p>Seu webhook para carrinhos abandonados:</p>
+                <code id="webhookAbandono"></code>
+                <p>Seu webhook para notificações de pagamento:</p>
+                <code id="webhookPagamento"></code>
+            </div>
+
+            <button id="openWebhooksModal">Webhooks</button>
+
+    <!-- Webhooks Modal -->
+    <div id="webhooksModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configuração de Webhooks</h2>
+                <span class="close-modal" onclick="closeWebhooksModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Para configurar os webhooks no seu sistema, utilize os links abaixo:</p>
+                
+                <p><strong>Webhook para Carrinhos Abandonados, Vendas Pendentes e Recusadas:</strong></p>
+                <code id="webhookAbandonoModal"></code>
+                
+                <p><strong>Webhook para Venda Aprovada:</strong></p>
+                <code id="webhookPagamentoModal"></code>
+                
+                <p>Certifique-se de que os webhooks estão ativos e configurados corretamente para receber notificações de eventos relevantes.</p>
+            </div>
+        </div>
+    </div>
 
             <div class="controls" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                 <div class="date" style="display: flex; align-items: center; gap: 20px;">
@@ -136,86 +158,224 @@
 
     <script src="index.js"></script>
     <script>
+        // Verifica o status de login no carregamento da página
+        document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem("isLoggedIn") === "true") {
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("dashboardContainer").style.display = "block";
+                fetchDashboardData(); // Busca os dados da dashboard
+            } else {
+                document.getElementById("loginContainer").style.display = "block";
+            }
+        });
+    
+        // JavaScript para alternar entre login e registro
+        document.getElementById('showRegister').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginContainer').classList.remove('active');
+            document.getElementById('registerContainer').classList.add('active');
+        });
+    
+        document.getElementById('showLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('registerContainer').classList.remove('active');
+            document.getElementById('loginContainer').classList.add('active');
+        });
+    
+        // Mostrar o formulário de login inicialmente
+        document.getElementById('loginContainer').classList.add('active');
+    
+        // Manipulação do formulário de login
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {
+                username_or_email: formData.get('username_or_email'),
+                password: formData.get('password')
+            };
+    
+            const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                credentials: 'include'
+            });
+    
+            const result = await response.json();
+            if (result.status === 'success') {
+                localStorage.setItem("isLoggedIn", "true"); // Salva o status de login
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboardContainer').style.display = 'block';
+                fetchDashboardData();
+            } else {
+                alert(result.message);
+            }
+        });
+    
+        // Manipulação do formulário de registro
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {
+                username: formData.get('username'),
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+    
+            const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+    
+            const result = await response.json();
+            if (result.status === 'success') {
+                alert('Registro realizado com sucesso! Faça login.');
+                document.getElementById('registerContainer').classList.remove('active');
+                document.getElementById('loginContainer').classList.add('active');
+            } else {
+                alert(result.message);
+            }
+        });
+    
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard', {
+                    credentials: 'include'
+                });
+    
+                if (response.redirected) {
+                    console.error("Redirecionado para:", response.url);
+                    alert("Você foi redirecionado. Por favor, faça login novamente.");
+                    return;
+                }
+    
+                const data = await response.json();
+    
+                if (data.webhook_token) {
+                    document.getElementById('webhookAbandono').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook2/${data.webhook_token}`;
+                    document.getElementById('webhookPagamento').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook-pagamento/${data.webhook_token}`;
+                } else {
+                    console.warn("Webhook token não encontrado na resposta:", data);
+                }
+    
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+    
+                document.querySelector('#data_inicio').value = firstDay;
+                document.querySelector('#data_fim').value = lastDay;
+    
+                // Atualiza o painel e carrega dados de pedidos recentes
+                await updateDashboard(firstDay, lastDay);
+            } catch (error) {
+                console.error("Erro ao buscar dados do dashboard:", error);
+            }
+        }
+    
+        // Botão de logout
+        document.getElementById('logoutButton').addEventListener('click', async function() {
+            const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                localStorage.removeItem("isLoggedIn"); // Remove o status de login
+                document.getElementById('dashboardContainer').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'block';
+            } else {
+                alert('Erro ao fazer logout.');
+            }
+        });
+    
+        // Variáveis globais
         let vendasData = [];
         let currentOffset = 0;
-
+    
         function formatDateBR(dateStr) {
             if (!dateStr) return 'N/A';
             const date = new Date(dateStr);
             return date.toLocaleDateString('pt-BR');
         }
-
+    
         function compareDates(a, b) {
             const dateA = new Date(a);
             const dateB = new Date(b);
             return dateB - dateA;
         }
-
+    
         function formatCurrency(value) {
             return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-
-            document.querySelector('#data_inicio').value = firstDay;
-            document.querySelector('#data_fim').value = lastDay;
-
-            updateDashboard(firstDay, lastDay);
-        });
-
+    
         async function updateDashboard(dataInicio = null, dataFim = null) {
             try {
                 if (!dataInicio || !dataFim) {
                     dataInicio = document.querySelector('#data_inicio').value;
                     dataFim = document.querySelector('#data_fim').value;
                 }
-
+    
                 const statusFiltro = document.querySelector('#status_filtro').value;
-
-                let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
+    
+                let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`, {
+                    credentials: 'include'
+                });
+                if (statusResponse.status === 401) {
+                    document.getElementById('dashboardContainer').style.display = 'none';
+                    document.getElementById('loginContainer').style.display = 'block';
+                    return;
+                }
                 let statusData = await statusResponse.json();
-
+    
                 document.querySelector('.carrinhos-abandonados').textContent = statusData.carrinhos_abandonados;
                 document.querySelector('.vendas-recuperadas').textContent = statusData.vendas_recuperadas;
                 document.querySelector('.dinheiro-recuperado').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
-
-                let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`);
-                vendasData = await vendasResponse.json();
-
-                if (statusFiltro !== 'todos') {
-                    vendasData = vendasData.filter(venda => venda.status === statusFiltro);
-                }
-
-                vendasData.sort((a, b) => {
-                    let dataA = a.status === 'recuperado' ? a.data_recuperacao : a.data_abandono;
-                    let dataB = b.status === 'recuperado' ? b.data_recuperacao : b.data_abandono;
-                    return compareDates(dataA, dataB);
-                });
-
-                document.querySelector('.recent-orders tbody').innerHTML = '';
-                currentOffset = 0;
-                loadMoreData();
-
+    
+                // Carrega e exibe os dados de vendas recentes na tabela
+                await loadVendasData(dataInicio, dataFim, statusFiltro);
                 updateKPIs(statusData);
             } catch (error) {
                 console.error('Erro ao atualizar o dashboard:', error);
             }
         }
-
+    
+        async function loadVendasData(dataInicio, dataFim, statusFiltro) {
+            try {
+                let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`, {
+                    credentials: 'include'
+                });
+                vendasData = await vendasResponse.json();
+    
+                if (statusFiltro !== 'todos') {
+                    vendasData = vendasData.filter(venda => venda.status === statusFiltro);
+                }
+    
+                vendasData.sort((a, b) => {
+                    let dataA = a.status === 'recuperado' ? a.data_recuperacao : a.data_abandono;
+                    let dataB = b.status === 'recuperado' ? b.data_recuperacao : b.data_abandono;
+                    return compareDates(dataA, dataB);
+                });
+    
+                document.querySelector('.recent-orders tbody').innerHTML = '';
+                currentOffset = 0;
+                loadMoreData(); // Carrega mais dados para exibir na tabela
+            } catch (error) {
+                console.error("Erro ao carregar dados de vendas:", error);
+            }
+        }
+    
         function renderTableData(startIndex, endIndex) {
             let tabelaVendas = document.querySelector('.recent-orders tbody');
-
+    
             for (let i = startIndex; i < endIndex && i < vendasData.length; i++) {
                 let venda = vendasData[i];
                 let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
                 let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
-
+    
                 let data = venda.status === 'recuperado' ? venda.data_recuperacao : venda.data_abandono;
                 let dataFormatada = formatDateBR(data);
-
+    
                 let row = `
                     <tr>
                         <td>${venda.full_name}</td>
@@ -228,50 +388,65 @@
                 tabelaVendas.insertAdjacentHTML('beforeend', row);
             }
         }
-
+    
         function loadMoreData() {
             let startIndex = currentOffset;
             let endIndex = currentOffset + 30;
             renderTableData(startIndex, endIndex);
             currentOffset = endIndex;
-
+    
             if (currentOffset >= vendasData.length) {
                 document.querySelector('.recent-orders a').style.display = 'none';
             }
         }
-
+    
         function updateKPIs(statusData) {
             const taxaRecuperacao = (statusData.vendas_recuperadas / statusData.carrinhos_abandonados) * 100;
             document.querySelector('#taxaRecuperacao').textContent = taxaRecuperacao.toFixed(2) + '%';
-
-             const valorMedioRecuperacao = statusData.total_dinheiro_recuperado / statusData.vendas_recuperadas;
+    
+            const valorMedioRecuperacao = statusData.total_dinheiro_recuperado / statusData.vendas_recuperada;
             document.querySelector('#valorMedioRecuperacao').textContent = formatCurrency(valorMedioRecuperacao);
-            
+    
             const tempoMedioRecuperacao = statusData.tempo_medio_recuperacao;
             const diasInteiros = Math.floor(tempoMedioRecuperacao);
             const horas = Math.round((tempoMedioRecuperacao - diasInteiros) * 24);
-
+    
             let displayTempoRecuperacao;
             if (diasInteiros > 0) {
                 displayTempoRecuperacao = `${diasInteiros} dias`;
             } else {
                 displayTempoRecuperacao = `${horas} horas`;
             }
-
+    
             document.querySelector('#tempoMedioRecuperacao').textContent = displayTempoRecuperacao;
         }
+        document.getElementById('openWebhooksModal').addEventListener('click', function () {
+            document.getElementById('webhooksModal').style.display = 'block';
+            document.getElementById('webhookAbandonoModal').textContent = document.getElementById('webhookAbandono').textContent;
+            document.getElementById('webhookPagamentoModal').textContent = document.getElementById('webhookPagamento').textContent;
+        });
 
+        function closeWebhooksModal() {
+            document.getElementById('webhooksModal').style.display = 'none';
+        }
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('webhooksModal')) {
+                closeWebhooksModal();
+            }
+        };
+   
         function exportToCSV() {
             const rows = [['Nome do Cliente', 'Data', 'Código Pagamento', 'Status']];
             vendasData.forEach(venda => {
                 rows.push([venda.full_name, venda.data_abandono || venda.data_recuperacao, venda.transaction_id, venda.status]);
             });
-
+    
             let csvContent = 'data:text/csv;charset=utf-8,';
             rows.forEach(row => {
                 csvContent += row.join(',') + '\n';
             });
-
+    
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement('a');
             link.setAttribute('href', encodedUri);
@@ -279,17 +454,11 @@
             document.body.appendChild(link);
             link.click();
         }
-
+    
         document.querySelector('#exportarCSV').addEventListener('click', exportToCSV);
-
-        document.querySelector('#darkMode').addEventListener('click', () => {
-            document.body.classList.add('dark-theme');
-        });
-        document.querySelector('#lightMode').addEventListener('click', () => {
-            document.body.classList.remove('dark-theme');
-        });
-
+    
         document.querySelector('.recent-orders a').addEventListener('click', loadMoreData);
     </script>
+    
 </body>
 </html>
