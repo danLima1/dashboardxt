@@ -238,40 +238,49 @@
             }
         });
     
-        async function fetchDashboardData() {
-            try {
-                const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard', {
-                    credentials: 'include'
-                });
-    
-                if (response.redirected) {
-                    console.error("Redirecionado para:", response.url);
-                    alert("Você foi redirecionado. Por favor, faça login novamente.");
-                    return;
-                }
-    
-                const data = await response.json();
-    
-                if (data.webhook_token) {
-                    document.getElementById('webhookAbandono').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook2/${data.webhook_token}`;
-                    document.getElementById('webhookPagamento').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook-pagamento/${data.webhook_token}`;
-                } else {
-                    console.warn("Webhook token não encontrado na resposta:", data);
-                }
-    
-                const today = new Date();
-                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-    
-                document.querySelector('#data_inicio').value = firstDay;
-                document.querySelector('#data_fim').value = lastDay;
-    
-                // Atualiza o painel e carrega dados de pedidos recentes
-                await updateDashboard(firstDay, lastDay);
-            } catch (error) {
-                console.error("Erro ao buscar dados do dashboard:", error);
-            }
+       async function fetchDashboardData() {
+    try {
+        const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard', {
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {  // Se o status for 401, limpa o localStorage e redireciona ao login
+            localStorage.removeItem("isLoggedIn");
+            alert("Sua sessão expirou. Por favor, faça login novamente.");
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            return;
         }
+
+        if (response.redirected) {
+            console.error("Redirecionado para:", response.url);
+            alert("Você foi redirecionado. Por favor, faça login novamente.");
+            return;
+        }
+
+        const data = await response.json();
+
+        if (data.webhook_token) {
+            document.getElementById('webhookAbandono').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook2/${data.webhook_token}`;
+            document.getElementById('webhookPagamento').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook-pagamento/${data.webhook_token}`;
+        } else {
+            console.warn("Webhook token não encontrado na resposta:", data);
+        }
+
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+
+        document.querySelector('#data_inicio').value = firstDay;
+        document.querySelector('#data_fim').value = lastDay;
+
+        // Atualiza o painel e carrega dados de pedidos recentes
+        await updateDashboard(firstDay, lastDay);
+    } catch (error) {
+        console.error("Erro ao buscar dados do dashboard:", error);
+    }
+}
+
     
         // Botão de logout
         document.getElementById('logoutButton').addEventListener('click', async function() {
