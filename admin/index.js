@@ -31,7 +31,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         password: formData.get('password')
     };
 
-    const response = await fetch('https://ominous-memory-xjwj4w7r65r2xqw-5000.app.github.dev/login', {
+    const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -61,7 +61,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         password: formData.get('password')
     };
 
-    const response = await fetch('https://ominous-memory-xjwj4w7r65r2xqw-5000.app.github.dev/register', {
+    const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)

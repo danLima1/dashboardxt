@@ -21,7 +21,7 @@ function setDefaultDates() {
 }
 
 function fetchUserList() {
-    fetch('https://ominous-memory-xjwj4w7r65r2xqw-5000.app.github.dev/admin/dashboard', {
+    fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/dashboard', {
         credentials: 'include'
     })
     .then(response => response.json())
@@ -56,7 +56,7 @@ function fetchDashboardData(userId) {
     const dataInicio = dataInicioInput.value;
     const dataFim = dataFimInput.value;
 
-    fetch(`https://ominous-memory-xjwj4w7r65r2xqw-5000.app.github.dev/admin/user/${userId}/dashboard?day_start=${dataInicio}&day_end=${dataFim}`, {
+    fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/user/${userId}/dashboard?day_start=${dataInicio}&day_end=${dataFim}`, {
         credentials: 'include'
     })
     .then(response => response.json())
@@ -127,14 +127,14 @@ function formatCurrency(value) {
 }
 
 function fetchWebhooks(userId) {
-    fetch(`https://ominous-memory-xjwj4w7r65r2xqw-5000.app.github.dev/admin/user/${userId}/webhooks`, {
+    fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/user/${userId}/webhooks`, {
         credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
         document.getElementById('webhooksInfo').style.display = 'block';
-        document.getElementById('webhookAbandono').textContent = `https://ominous-memory-xjwj4w7r65r2xqw-5000.app.github.dev/webhook2/${data.webhook_token}`;
-        document.getElementById('webhookPagamento').textContent = `https://ominous-memory-xjwj4w7r65r2xqw-5000.app.github.dev/webhook-pagamento/${data.webhook_token}`;
+        document.getElementById('webhookAbandono').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook2/${data.webhook_token}`;
+        document.getElementById('webhookPagamento').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook-pagamento/${data.webhook_token}`;
     })
     .catch(error => {
         console.error("Erro ao buscar webhooks do usuário:", error);
@@ -142,7 +142,7 @@ function fetchWebhooks(userId) {
 }
 
 document.getElementById('logoutButton').addEventListener('click', async function() {
-    const response = await fetch('https://ominous-memory-xjwj4w7r65r2xqw-5000.app.github.dev/logout', {
+    const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/logout', {
         method: 'POST',
         credentials: 'include'
     });
