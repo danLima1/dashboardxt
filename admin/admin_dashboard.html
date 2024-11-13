@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Recuperação de Vendas</title>
+</head>
+<body>
+    <div class="container" id="dashboardContainer">
+        <main>
+            <div class="top">
+                <h1 style="color: var(--color-primary); font-size: 2rem; font-weight: 800;">Painel de Recuperação - Administrador</h1>
+                <button id="logoutButton">Logout</button>
+            </div>
+
+            <div class="controls">
+                <div id="userSelection">
+                    <label for="userSelect">Selecione um usuário:</label>
+                    <select id="userSelect">
+                        <option value="">-- Selecione --</option>
+                    </select>
+                </div>
+                <div class="date">
+                    <label for="data_inicio">Data Início:</label>
+                    <input type="date" id="data_inicio">
+                    <label for="data_fim">Data Fim:</label>
+                    <input type="date" id="data_fim">
+                </div>
+                <div class="tabs">
+                    <label for="status_filtro">Status:</label>
+                    <select id="status_filtro" onchange="updateDashboard()">
+                        <option value="todos">Todos</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="recuperado">Recuperado</option>
+                    </select>
+                </div>
+                <button id="confirmar" class="confirm-btn" onclick="updateDashboard()">Confirmar</button>
+            </div>
+
+            <div id="userDashboard">
+                <div class="insights">
+                    <div class="metric">
+                        <h3>Carrinhos abandonados</h3>
+                        <h1 class="carrinhos-abandonados">0</h1>
+                    </div>
+                    <div class="metric">
+                        <h3>Vendas recuperadas</h3>
+                        <h1 class="vendas-recuperadas">0</h1>
+                    </div>
+                    <div class="metric">
+                        <h3>Dinheiro recuperado</h3>
+                        <h1 class="dinheiro-recuperado">R$0.00</h1>
+                    </div>
+                </div>
+
+                <div class="insights">
+                    <div class="metric">
+                        <h3>Taxa de Recuperação</h3>
+                        <h1 id="taxaRecuperacao">0%</h1>
+                    </div>
+                    <div class="metric">
+                        <h3>Valor Médio por Recuperação</h3>
+                        <h1 id="valorMedioRecuperacao">R$0.00</h1>
+                    </div>
+                    <div class="metric">
+                        <h3>Tempo Médio de Recuperação</h3>
+                        <h1 id="tempoMedioRecuperacao">0 dias</h1>
+                    </div>
+                </div>
+
+
+                <div class="recent-orders">
+                    <h2>Pedidos Recentes</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome do cliente</th>
+                                <th>Data</th>
+                                <th>Código Pagamento</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <a href="#" onclick="loadMoreData()">Mostrar mais</a>
+                </div>
+
+                <button id="exportarCSV">Exportar CSV</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin_dashboard.js"></script>
+    <script src="color.js"></script>
+</body>
+</html>
