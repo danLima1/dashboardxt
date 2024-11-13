@@ -34,7 +34,39 @@
     /* -----CARD SHADING----- */
     --box-shadow: 0 2rem 3rem var(--color-light);
 }
+#userSelect {
+    background-color: #000000; /* Fundo preto */
+    color: #FFFFFF;            /* Texto branco */
+    border: 1px solid #FFFFFF; /* Borda branca opcional */
+    padding: 8px;              /* Espaçamento interno */
+    border-radius: 4px;        /* Bordas arredondadas */
+    appearance: none;          /* Remove a aparência padrão (para alguns navegadores) */
+    -webkit-appearance: none;  /* Remove a aparência padrão no Safari */
+    -moz-appearance: none;     /* Remove a aparência padrão no Firefox */
+}
 
+/* Estilizando as opções do seletor (opcional) */
+#userSelect option {
+    background-color: #000000; /* Fundo preto */
+    color: #FFFFFF;            /* Texto branco */
+}
+
+#status_filtro {
+    background-color: #000000; /* Fundo preto */
+    color: #FFFFFF;            /* Texto branco */
+    border: 1px solid #FFFFFF; /* Borda branca opcional */
+    padding: 8px;              /* Espaçamento interno */
+    border-radius: 4px;        /* Bordas arredondadas */
+    appearance: none;          /* Remove a aparência padrão (para alguns navegadores) */
+    -webkit-appearance: none;  /* Remove a aparência padrão no Safari */
+    -moz-appearance: none;     /* Remove a aparência padrão no Firefox */
+}
+
+/* Estilizando as opções do seletor (opcional) */
+#status_filtro option {
+    background-color: #000000; /* Fundo preto */
+    color: #FFFFFF;            /* Texto branco */
+}
 input[type="date"] {
     color: white; /* Cor do texto */
     background-color: transparent; /* Fundo transparente */
