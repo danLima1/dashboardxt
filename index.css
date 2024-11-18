@@ -1132,9 +1132,6 @@ thead th {
 }
 
 .status-pago {
-    color: var(--color-success);
+    color: rgb(178, 13, 211);
     font-weight: 600;
 }
-
-
-
