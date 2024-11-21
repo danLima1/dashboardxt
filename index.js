@@ -23,7 +23,7 @@ document.getElementById('showLogin').addEventListener('click', function(e) {
     document.getElementById('loginContainer').classList.add('active');
 });
 
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
+document.getElementById('loginForm').addEventListener('submit', async function(e) { 
     e.preventDefault();
     const formData = new FormData(this);
     const data = {

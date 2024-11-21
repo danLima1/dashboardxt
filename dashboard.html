@@ -3,10 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="index.css">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pZw1XHhTKE0t6ZVq3VnEgl5E1I6Gx5ZsXed6eapwG3NLMdQv2unBb3mABJkPmbgZl7TqlhQwX1dEPN5P8SR1wA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Recuperação</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Koulen&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        /* Adicione estilos para o aviso */
+        .email-warning {
+            background-color: #000000;
+            border: 1px solid #8b66d1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        /* Estilos para o campo de senha com o ícone de olho */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-right: 30px; /* Espaço para o ícone */
+        }
+
+        .password-container .toggle-password {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: #888;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .password-container .toggle-password:hover {
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -83,21 +121,33 @@
                         <span class="close-modal" onclick="closeEmailConfigModal()">&times;</span>
                     </div>
                     <div class="modal-body">
+                        <!-- Aviso Adicionado -->
+                        <div class="email-warning">
+                            Recomendamos fortemente que você utilize um email profissional pago da Hostinger, pois ele possui dupla verificação contra spam, não nos responsabilizamos caso você utilize outro e-mail e a ferramenta não funcione como o esperado. Caso o seu email não seja da Hostinger, substitua os valores do servidor SMTP e porta SMTP pela configuração correta do seu email. Para isso, pesquise no Google.
+                        </div>
                         <form id="emailConfigForm">
                             <label for="smtp_server">Servidor SMTP:</label>
-                            <input type="text" id="smtp_server" name="smtp_server" placeholder="smtp.hostinger.com" required>
+                            <input type="text" id="smtp_server" name="smtp_server" value="smtp.hostinger.com" required>
                             
                             <label for="smtp_port">Porta SMTP:</label>
-                            <input type="number" id="smtp_port" name="smtp_port" placeholder="587" required>
+                            <input type="number" id="smtp_port" name="smtp_port" value="587" required>
                             
                             <label for="email_username">Email (usuário):</label>
                             <input type="email" id="email_username" name="email_username" placeholder="seuemail@hostinger.com" required>
                             
-                            <label for="email_password">Senha do Email:</label>
-                            <input type="password" id="email_password" name="email_password" placeholder="********" required>
+                            <label for="email_password">Senha do Email (ou senha de aplicativo para e-mails google):</label>
+                            <div class="password-container">
+                                <input type="password" id="email_password" name="email_password" placeholder="********" required>
+                                <svg id="toggle_password_icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#888" class="toggle-password">
+                                    <!-- Ícone de Olho Aberto -->
+                                    <path d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 13c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+                                </svg>
+                            </div>
+                            
                             
                             <label for="from_name">Nome de Exibição:</label>
-                            <input type="text" id="from_name" name="from_name" placeholder="Seu Nome ou Empresa">
+                            <input type="text" id="from_name" name="from_name" placeholder="nome da empresa ou algo como 'Finalize o Pagamento'">
                             
                             <button type="submit">Salvar Configuração</button>
                         </form>
@@ -513,16 +563,22 @@
                 const result = await response.json();
 
                 if (result.status === 'success') {
-                    document.getElementById('smtp_server').value = result.smtp_server || '';
-                    document.getElementById('smtp_port').value = result.smtp_port || '';
+                    document.getElementById('smtp_server').value = result.smtp_server || 'smtp.hostinger.com';
+                    document.getElementById('smtp_port').value = result.smtp_port || '587';
                     document.getElementById('email_username').value = result.email_username || '';
                     // Não preencha o campo de senha por segurança
                     document.getElementById('from_name').value = result.from_name || '';
                 } else {
                     console.warn('Erro ao obter configuração de email:', result.message);
+                    // Define os valores padrão caso ocorra um erro
+                    document.getElementById('smtp_server').value = 'smtp.hostinger.com';
+                    document.getElementById('smtp_port').value = '587';
                 }
             } catch (error) {
                 console.error('Erro ao obter configuração de email:', error);
+                // Define os valores padrão em caso de erro na requisição
+                document.getElementById('smtp_server').value = 'smtp.hostinger.com';
+                document.getElementById('smtp_port').value = '587';
             }
         });
 
@@ -623,6 +679,21 @@
         document.querySelector('#exportarCSV').addEventListener('click', exportToCSV);
 
         document.querySelector('.recent-orders a').addEventListener('click', loadMoreData);
+
+        // Alternar a visibilidade da senha no formulário de configuração de email
+        document.getElementById('toggle_password_icon').addEventListener('click', function() {
+            const passwordField = document.getElementById('email_password');
+            const icon = document.getElementById('toggle_password_icon');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
     </script>
 </body>
 </html>
