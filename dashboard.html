@@ -45,6 +45,26 @@
         .password-container .toggle-password:hover {
             color: #333;
         }
+
+        /* Estilos para mensagens de feedback */
+        .message-container {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none; /* Oculta por padrão */
+        }
+
+        .message-container.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-container.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -91,7 +111,11 @@
                 <button id="openWebhooksModal">Webhooks</button>
                 <button id="openEmailConfigModal">Configurar Email</button>
             </div>
-
+            <div class="credits-info" style="background-color: var(--color-white); padding: 20px; border-radius: var(--card-border-radius); box-shadow: var(--box-shadow); margin-bottom: 30px; text-align: center;">
+                <h3 style="color: var(--color-dark);">Créditos Disponíveis</h3>
+                <h1 id="userCredits" style="color: var(--color-primary); font-size: 2rem;">0</h1>
+            </div>
+            
             <!-- Webhooks Modal -->
             <div id="webhooksModal" class="modal">
                 <div class="modal-content">
@@ -125,6 +149,8 @@
                         <div class="email-warning">
                             Recomendamos fortemente que você utilize um email profissional pago da Hostinger, pois ele possui dupla verificação contra spam, não nos responsabilizamos caso você utilize outro e-mail e a ferramenta não funcione como o esperado. Caso o seu email não seja da Hostinger, substitua os valores do servidor SMTP e porta SMTP pela configuração correta do seu email. Para isso, pesquise no Google.
                         </div>
+                        <!-- Contêiner de Mensagens -->
+                        <div id="emailConfigMessage" class="message-container"></div>
                         <form id="emailConfigForm">
                             <label for="smtp_server">Servidor SMTP:</label>
                             <input type="text" id="smtp_server" name="smtp_server" value="smtp.hostinger.com" required>
@@ -341,44 +367,39 @@
         });
 
         async function fetchDashboardData(dataInicio = null, dataFim = null) {
-            try {
-                const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard', {
-                    credentials: 'include'
-                });
+    try {
+        const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard', {
+            credentials: 'include'
+        });
 
-                if (response.status === 401) {
-                    handleSessionExpired();
-                    return;
-                }
-
-                if (response.redirected) {
-                    console.error("Redirecionado para:", response.url);
-                    alert("Você foi redirecionado. Por favor, faça login novamente.");
-                    return;
-                }
-
-                const data = await response.json();
-
-                if (data.webhook_token) {
-                    document.getElementById('webhookAbandono').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook2/${data.webhook_token}`;
-                    document.getElementById('webhookPagamento').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook-pagamento/${data.webhook_token}`;
-                } else {
-                    console.warn("Webhook token não encontrado na resposta:", data);
-                }
-
-                const today = new Date();
-                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-
-                document.querySelector('#data_inicio').value = firstDay;
-                document.querySelector('#data_fim').value = lastDay;
-
-                // Atualiza o painel e carrega dados de pedidos recentes
-                await updateDashboard(firstDay, lastDay);
-            } catch (error) {
-                console.error("Erro ao buscar dados do dashboard:", error);
-            }
+        if (response.status === 401) {
+            handleSessionExpired();
+            return;
         }
+
+        const data = await response.json();
+
+        if (data.webhook_token) {
+            document.getElementById('webhookAbandono').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook2/${data.webhook_token}`;
+            document.getElementById('webhookPagamento').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook-pagamento/${data.webhook_token}`;
+        }
+
+        // Atualiza o saldo de créditos no dashboard
+        document.getElementById('userCredits').textContent = data.credits;
+
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+
+        document.querySelector('#data_inicio').value = firstDay;
+        document.querySelector('#data_fim').value = lastDay;
+
+        await updateDashboard(firstDay, lastDay);
+    } catch (error) {
+        console.error("Erro ao buscar dados do dashboard:", error);
+    }
+}
+
 
         function handleSessionExpired() {
             // Limpa o estado de login
@@ -553,6 +574,12 @@
         document.getElementById('openEmailConfigModal').addEventListener('click', async function () {
             document.getElementById('emailConfigModal').style.display = 'block';
 
+            // Limpa a mensagem de feedback anterior
+            const messageDiv = document.getElementById('emailConfigMessage');
+            messageDiv.className = 'message-container';
+            messageDiv.textContent = '';
+            messageDiv.style.display = 'none';
+
             // Fetch current email configuration
             try {
                 const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/get-email-config', {
@@ -613,6 +640,9 @@
                 from_name: from_name
             };
 
+            const messageDiv = document.getElementById('emailConfigMessage');
+            messageDiv.style.display = 'none'; // Oculta a mensagem anterior
+
             try {
                 const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/set-email-config', {
                     method: 'POST',
@@ -624,14 +654,24 @@
                 const result = await response.json();
 
                 if (result.status === 'success') {
-                    alert('Configuração de email atualizada com sucesso!');
-                    closeEmailConfigModal();
+                    messageDiv.className = 'message-container success';
+                    messageDiv.textContent = 'Configuração de email atualizada com sucesso e e-mail de confirmação enviado.';
+                    messageDiv.style.display = 'block';
+                    // Opcional: Fechar o modal após alguns segundos
+                    setTimeout(() => {
+                        closeEmailConfigModal();
+                        messageDiv.style.display = 'none';
+                    }, 3000);
                 } else {
-                    alert('Erro ao atualizar configuração de email: ' + result.message);
+                    messageDiv.className = 'message-container error';
+                    messageDiv.textContent = 'Erro ao atualizar configuração de email: ' + result.message;
+                    messageDiv.style.display = 'block';
                 }
             } catch (error) {
                 console.error('Erro ao enviar configuração de email:', error);
-                alert('Erro ao enviar configuração de email.');
+                messageDiv.className = 'message-container error';
+                messageDiv.textContent = 'Erro ao enviar configuração de email. Por favor, tente novamente.';
+                messageDiv.style.display = 'block';
             }
         });
 

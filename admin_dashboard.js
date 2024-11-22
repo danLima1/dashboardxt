@@ -122,6 +122,7 @@ function clearDashboard() {
     document.querySelector('.recent-orders tbody').innerHTML = '';
 }
 
+// Função para formatar moeda
 function formatCurrency(value) {
     return 'R$' + (value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -142,10 +143,13 @@ function fetchWebhooks(userId) {
 }
 
 document.getElementById('logoutButton').addEventListener('click', async function() {
-    const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/logout', {
+    const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/add-credits', {
         method: 'POST',
-        credentials: 'include'
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: parseInt(userId), amount: creditAmount }),
+        credentials: 'include'  // Garante que os cookies sejam enviados
     });
+    
     const result = await response.json();
     if (result.status === 'success') {
         localStorage.removeItem("isLoggedIn");
@@ -227,40 +231,63 @@ document.getElementById('confirmar').addEventListener('click', function() {
     updateDashboard();
 });
 
-document.getElementById('openWebhooksModal').addEventListener('click', function () {
-    document.getElementById('webhooksModal').style.display = 'block';
-    document.getElementById('webhookAbandonoModal').textContent = document.getElementById('webhookAbandono').textContent;
-    document.getElementById('webhookPagamentoModal').textContent = document.getElementById('webhookPagamento').textContent;
-});
+// Seção de Adicionar Créditos
 
-function closeWebhooksModal() {
-    document.getElementById('webhooksModal').style.display = 'none';
-}
+document.getElementById('addCreditsButton').addEventListener('click', async function() {
+    const creditAmount = parseInt(document.getElementById('creditAmount').value);
+    const userId = document.getElementById('userSelect').value;
+    const messageDiv = document.getElementById('addCreditsMessage');
 
-window.onclick = function (event) {
-    if (event.target == document.getElementById('webhooksModal')) {
-        closeWebhooksModal();
+    // Validação dos dados
+    if (!userId) {
+        messageDiv.className = 'message-container error';
+        messageDiv.textContent = 'Por favor, selecione um usuário.';
+        messageDiv.style.display = 'block';
+        return;
     }
-};
 
-function exportToCSV() {
-    const rows = [['Nome do Cliente', 'Data', 'Código Pagamento', 'Status']];
-    vendasData.forEach(venda => {
-        let data = venda.status === 'recuperado' ? venda.data_recuperacao : venda.data_abandono;
-        rows.push([venda.full_name, data, venda.transaction_id, venda.status]);
-    });
+    if (isNaN(creditAmount) || creditAmount <= 0) {
+        messageDiv.className = 'message-container error';
+        messageDiv.textContent = 'Por favor, insira uma quantidade válida de créditos.';
+        messageDiv.style.display = 'block';
+        return;
+    }
 
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    rows.forEach(row => {
-        csvContent += row.join(',') + '\n';
-    });
+    // Limpar mensagens anteriores
+    messageDiv.className = 'message-container';
+    messageDiv.textContent = '';
+    messageDiv.style.display = 'none';
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'vendas_recuperacao.csv');
-    document.body.appendChild(link);
-    link.click();
-}
+    // Enviar solicitação para adicionar créditos
+    try {
+        const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/add-credits', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: parseInt(userId), amount: creditAmount }),
+            credentials: 'include'
+        });
 
-document.querySelector('#exportarCSV').addEventListener('click', exportToCSV);
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            messageDiv.className = 'message-container success';
+            messageDiv.textContent = result.message;
+            messageDiv.style.display = 'block';
+
+            // Atualizar os dados do dashboard para refletir o novo saldo de créditos
+            fetchDashboardData(userId);
+
+            // Limpar o campo de quantidade de créditos
+            document.getElementById('creditAmount').value = '';
+        } else {
+            messageDiv.className = 'message-container error';
+            messageDiv.textContent = result.message;
+            messageDiv.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Erro ao adicionar créditos:', error);
+        messageDiv.className = 'message-container error';
+        messageDiv.textContent = 'Erro ao adicionar créditos. Por favor, tente novamente.';
+        messageDiv.style.display = 'block';
+    }
+});
