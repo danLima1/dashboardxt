@@ -143,22 +143,30 @@ function fetchWebhooks(userId) {
 }
 
 document.getElementById('logoutButton').addEventListener('click', async function() {
-    const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/add-credits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: parseInt(userId), amount: creditAmount }),
-        credentials: 'include'  // Garante que os cookies sejam enviados
-    });
-    
-    const result = await response.json();
-    if (result.status === 'success') {
-        localStorage.removeItem("isLoggedIn");
-        localStorage.removeItem("userRole");
-        window.location.href = 'index.html';
-    } else {
-        alert('Erro ao fazer logout.');
+    try {
+        const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/logout', {  // Substitua pelo endpoint correto de logout
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            // Limpa os dados de autenticação do frontend
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userRole");
+            
+            // Redireciona para a página de login ou inicial
+            window.location.href = 'index.html';
+        } else {
+            // Trate erros retornados pelo servidor
+            const result = await response.json();
+            alert(result.message || 'Erro ao fazer logout.');
+        }
+    } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+        alert('Erro ao fazer logout. Por favor, tente novamente.');
     }
 });
+
 
 let vendasData = [];
 let currentOffset = 0;
