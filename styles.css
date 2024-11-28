@@ -900,7 +900,7 @@ select option {
     max-width: 700px;
     margin: 50px auto;
     padding: 20px;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.4);
     border-radius: 8px;
     box-shadow: var(--box-shadow);
     display: none;
