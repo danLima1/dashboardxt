@@ -9,7 +9,9 @@
     <title>Dashboard Recuperação</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Koulen&family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        /* Adicione estilos para o aviso */
+        /* Seus estilos existentes */
+
+        /* Estilos para o aviso */
         .email-warning {
             background-color: #000000;
             border: 1px solid #8b66d1;
@@ -30,7 +32,7 @@
 
         .password-container input {
             width: 100%;
-            padding-right: 30px; /* Espaço para o ícone */
+            padding-right: 30px;
         }
 
         .password-container .toggle-password {
@@ -51,7 +53,7 @@
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 15px;
-            display: none; /* Oculta por padrão */
+            display: none;
         }
 
         .message-container.success {
@@ -64,6 +66,37 @@
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+
+        /* Media queries para responsividade */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .insights {
+                flex-direction: column;
+            }
+            .metric {
+                width: 100% !important;
+                margin-bottom: 20px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .controls .date,
+            .controls .tabs {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .controls .confirm-btn {
+                width: 100%;
+            }
+            .buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -234,21 +267,20 @@
             </div>
 
             <!-- Pedidos Recentes -->
-            <div class="recent-orders" style="background-color: var(--color-white); padding: 20px; border-radius: var(--card-border-radius); box-shadow: var(--box-shadow);">
-                <h2 style="color: var(--color-primary); margin-bottom: 20px;">Pedidos Recentes</h2>
-                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+            <div class="recent-orders">
+                <h2>Pedidos Recentes</h2>
+                <table>
                     <thead>
                         <tr>
-                            <th style="padding: 10px; border-bottom: 1px solid var(--color-light);">Nome do cliente</th>
-                            <th style="padding: 10px; border-bottom: 1px solid var(--color-light);">Data</th>
-                            <th style="padding: 10px; border-bottom: 1px solid var(--color-light);">Código Pagamento</th>
-                            <th style="padding: 10px; border-bottom: 1px solid var(--color-light);">Status</th>
-                            <th style="padding: 10px; border-bottom: 1px solid var(--color-light);">Ações</th>
+                            <th>Nome do cliente</th>
+                            <th>Data</th>
+                            <th>Código Pagamento</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
-                <a href="#" style="color: var(--color-primary); text-align: center; display: block; margin-top: 20px;" onclick="loadMoreData()">Mostrar mais</a>
+                <a href="#" onclick="loadMoreData()">Mostrar mais</a>
             </div>
 
             <!-- Histórico de Ações -->
