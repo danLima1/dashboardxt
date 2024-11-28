@@ -1,4 +1,6 @@
-// admin_dashboard.js
+let usersData = [];
+let vendasData = [];
+let currentOffset = 0;
 
 document.addEventListener("DOMContentLoaded", function() {
     if (localStorage.getItem("userRole") !== "admin") {
@@ -6,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
         window.location.href = 'index.html';
         return;
     }
-    fetchUserList();
+    loadUsers();
     setDefaultDates();
 });
 
@@ -15,17 +17,17 @@ function setDefaultDates() {
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const dataInicioInput = document.querySelector('#data_inicio');
     const dataFimInput = document.querySelector('#data_fim');
-
     dataInicioInput.value = firstDayOfMonth.toISOString().split('T')[0];
     dataFimInput.value = today.toISOString().split('T')[0];
 }
 
-function fetchUserList() {
+function loadUsers() {
     fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/dashboard', {
         credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
+        usersData = data;
         const userSelect = document.getElementById('userSelect');
         data.forEach(user => {
             const option = document.createElement('option');
@@ -35,16 +37,21 @@ function fetchUserList() {
         });
     })
     .catch(error => {
-        console.error('Erro ao obter a lista de usuários:', error);
+        console.error('Erro ao carregar usuários:', error);
     });
 }
 
 document.getElementById('userSelect').addEventListener('change', function() {
-    const userId = this.value;
-    if (userId) {
+    const selectedUserId = this.value;
+    const selectedUser = usersData.find(user => user.user_id == selectedUserId);
+    if (selectedUser) {
+        document.getElementById('creditsValue').textContent = selectedUser.credits;
+        document.getElementById('userCredits').style.display = 'block';
         setDefaultDates();
-        fetchDashboardData(userId);
+        fetchDashboardData(selectedUserId);
     } else {
+        document.getElementById('creditsValue').textContent = '0';
+        document.getElementById('userCredits').style.display = 'none';
         clearDashboard();
     }
 });
@@ -52,30 +59,24 @@ document.getElementById('userSelect').addEventListener('change', function() {
 function fetchDashboardData(userId) {
     const dataInicioInput = document.querySelector('#data_inicio');
     const dataFimInput = document.querySelector('#data_fim');
-
     const dataInicio = dataInicioInput.value;
     const dataFim = dataFimInput.value;
-
     fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/user/${userId}/dashboard?day_start=${dataInicio}&day_end=${dataFim}`, {
         credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
         renderDashboardData(data);
-
         vendasData = data.vendas_data;
-
         if (vendasData && vendasData.length > 0) {
             vendasData.sort((a, b) => {
                 let dataA = a.status === 'recuperado' ? a.data_recuperacao : a.data_abandono;
                 let dataB = b.status === 'recuperado' ? b.data_recuperacao : b.data_abandono;
                 return new Date(dataB) - new Date(dataA);
             });
-
             document.querySelector('.recent-orders tbody').innerHTML = '';
             currentOffset = 0;
             loadMoreData();
-
             if (vendasData.length > currentOffset) {
                 document.querySelector('.recent-orders a').style.display = 'block';
             } else {
@@ -85,8 +86,6 @@ function fetchDashboardData(userId) {
             document.querySelector('.recent-orders tbody').innerHTML = '<tr><td colspan="5">Nenhum pedido encontrado.</td></tr>';
             document.querySelector('.recent-orders a').style.display = 'none';
         }
-
-        fetchWebhooks(userId);
     })
     .catch(error => {
         console.error("Erro ao buscar dados do dashboard:", error);
@@ -97,13 +96,10 @@ function renderDashboardData(statusData) {
     document.querySelector('.carrinhos-abandonados').textContent = statusData.carrinhos_abandonados;
     document.querySelector('.vendas-recuperadas').textContent = statusData.vendas_recuperadas;
     document.querySelector('.dinheiro-recuperado').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
-
     const taxaRecuperacao = (statusData.vendas_recuperadas / statusData.carrinhos_abandonados) * 100 || 0;
     document.querySelector('#taxaRecuperacao').textContent = taxaRecuperacao.toFixed(2) + '%';
-
     const valorMedioRecuperacao = statusData.total_dinheiro_recuperado / statusData.vendas_recuperadas || 0;
     document.querySelector('#valorMedioRecuperacao').textContent = formatCurrency(valorMedioRecuperacao);
-
     let tempoMedioRecuperacao = parseFloat(statusData.tempo_medio_recuperacao);
     if (isNaN(tempoMedioRecuperacao)) {
         tempoMedioRecuperacao = 0;
@@ -118,58 +114,12 @@ function clearDashboard() {
     document.querySelector('#taxaRecuperacao').textContent = '0%';
     document.querySelector('#valorMedioRecuperacao').textContent = 'R$0.00';
     document.querySelector('#tempoMedioRecuperacao').textContent = '0 dias';
-    document.getElementById('webhooksInfo').style.display = 'none';
     document.querySelector('.recent-orders tbody').innerHTML = '';
 }
 
-// Função para formatar moeda
 function formatCurrency(value) {
     return 'R$' + (value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
-function fetchWebhooks(userId) {
-    fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/user/${userId}/webhooks`, {
-        credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('webhooksInfo').style.display = 'block';
-        document.getElementById('webhookAbandono').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook2/${data.webhook_token}`;
-        document.getElementById('webhookPagamento').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook-pagamento/${data.webhook_token}`;
-    })
-    .catch(error => {
-        console.error("Erro ao buscar webhooks do usuário:", error);
-    });
-}
-
-document.getElementById('logoutButton').addEventListener('click', async function() {
-    try {
-        const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/logout', {  // Substitua pelo endpoint correto de logout
-            method: 'POST',
-            credentials: 'include'
-        });
-
-        if (response.ok) {
-            // Limpa os dados de autenticação do frontend
-            localStorage.removeItem("isLoggedIn");
-            localStorage.removeItem("userRole");
-            
-            // Redireciona para a página de login ou inicial
-            window.location.href = 'index.html';
-        } else {
-            // Trate erros retornados pelo servidor
-            const result = await response.json();
-            alert(result.message || 'Erro ao fazer logout.');
-        }
-    } catch (error) {
-        console.error('Erro ao fazer logout:', error);
-        alert('Erro ao fazer logout. Por favor, tente novamente.');
-    }
-});
-
-
-let vendasData = [];
-let currentOffset = 0;
 
 function updateDashboard(userId = null) {
     if (!userId) {
@@ -179,7 +129,6 @@ function updateDashboard(userId = null) {
         alert('Selecione um usuário.');
         return;
     }
-
     fetchDashboardData(userId);
 }
 
@@ -188,12 +137,10 @@ function loadMoreData() {
         console.warn('Nenhum dado de vendas para exibir.');
         return;
     }
-
     let startIndex = currentOffset;
     let endIndex = currentOffset + 30;
     renderTableData(startIndex, endIndex);
     currentOffset = endIndex;
-
     if (currentOffset >= vendasData.length) {
         document.querySelector('.recent-orders a').style.display = 'none';
     }
@@ -201,16 +148,12 @@ function loadMoreData() {
 
 function renderTableData(startIndex, endIndex) {
     let tabelaVendas = document.querySelector('.recent-orders tbody');
-
     for (let i = startIndex; i < endIndex && i < vendasData.length; i++) {
         let venda = vendasData[i];
-
         let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
         let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
-
         let data = venda.status === 'recuperado' ? venda.data_recuperacao : venda.data_abandono;
         let dataFormatada = formatDateBR(data);
-
         let row = `
             <tr>
                 <td>${venda.full_name || 'N/A'}</td>
@@ -239,34 +182,45 @@ document.getElementById('confirmar').addEventListener('click', function() {
     updateDashboard();
 });
 
-// Seção de Adicionar Créditos
+document.getElementById('logoutButton').addEventListener('click', async function() {
+    try {
+        const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+        if (response.ok) {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userRole");
+            window.location.href = 'index.html';
+        } else {
+            const result = await response.json();
+            alert(result.message || 'Erro ao fazer logout.');
+        }
+    } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+        alert('Erro ao fazer logout. Por favor, tente novamente.');
+    }
+});
 
 document.getElementById('addCreditsButton').addEventListener('click', async function() {
     const creditAmount = parseInt(document.getElementById('creditAmount').value);
     const userId = document.getElementById('userSelect').value;
     const messageDiv = document.getElementById('addCreditsMessage');
-
-    // Validação dos dados
     if (!userId) {
         messageDiv.className = 'message-container error';
         messageDiv.textContent = 'Por favor, selecione um usuário.';
         messageDiv.style.display = 'block';
         return;
     }
-
     if (isNaN(creditAmount) || creditAmount <= 0) {
         messageDiv.className = 'message-container error';
         messageDiv.textContent = 'Por favor, insira uma quantidade válida de créditos.';
         messageDiv.style.display = 'block';
         return;
     }
-
-    // Limpar mensagens anteriores
     messageDiv.className = 'message-container';
     messageDiv.textContent = '';
     messageDiv.style.display = 'none';
-
-    // Enviar solicitação para adicionar créditos
     try {
         const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/add-credits', {
             method: 'POST',
@@ -274,19 +228,14 @@ document.getElementById('addCreditsButton').addEventListener('click', async func
             body: JSON.stringify({ user_id: parseInt(userId), amount: creditAmount }),
             credentials: 'include'
         });
-
         const result = await response.json();
-
         if (result.status === 'success') {
             messageDiv.className = 'message-container success';
             messageDiv.textContent = result.message;
             messageDiv.style.display = 'block';
-
-            // Atualizar os dados do dashboard para refletir o novo saldo de créditos
             fetchDashboardData(userId);
-
-            // Limpar o campo de quantidade de créditos
             document.getElementById('creditAmount').value = '';
+            updateUserCredits(userId, creditAmount);
         } else {
             messageDiv.className = 'message-container error';
             messageDiv.textContent = result.message;
@@ -299,3 +248,11 @@ document.getElementById('addCreditsButton').addEventListener('click', async func
         messageDiv.style.display = 'block';
     }
 });
+
+function updateUserCredits(userId, addedCredits) {
+    const selectedUser = usersData.find(user => user.user_id == userId);
+    if (selectedUser) {
+        selectedUser.credits += addedCredits;
+        document.getElementById('creditsValue').textContent = selectedUser.credits;
+    }
+}
