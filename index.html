@@ -5,30 +5,146 @@
     <link rel="stylesheet" href="styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Recuperação de Vendas</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+    
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            position: relative;
+            }
+
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente */
+            padding: 40px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        /* Centralizando a logo */
+        .form-container img.logo {
+            width: 150px;
+            display: block; /* Garante que a imagem seja um bloco */
+            margin: 0 auto 20px auto; /* Centraliza horizontalmente e adiciona margem inferior */
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #ffffff;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container input {
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .form-container input::placeholder {
+            color: #cccccc;
+        }
+
+        .form-container .btn {
+            background-color: #2b1b4e;
+            color: #ffffff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container .btn:hover {
+            background-color: #3b2b6e;
+        }
+
+        .form-container p {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .form-container a {
+            color: #ffffff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .form-container a:hover {
+            color: #cccccc;
+        }
+
+        /* Estado ativo */
+        .form-container.active {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 2;
+        }
+
+        #registerContainer {
+            display: none;
+        }
+
+        .form-container.active ~ #registerContainer {
+            display: none;
+        }
+
+        /* Responsividade */
+        @media (max-width: 500px) {
+            .form-container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .form-container img.logo {
+                width: 140px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="loginContainer" class="active">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <input type="text" name="username_or_email" placeholder="Usuário" required>
-            <input type="password" name="password" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
-        </form>
-        <p>Não tem uma conta? <a href="#" id="showRegister">Registre-se</a></p>
-    </div>
+    <div class="container">
+        <div id="loginContainer" class="form-container active">
+            <img src="https://firebasestorage.googleapis.com/v0/b/player-music-72d4d.appspot.com/o/img%2Ff24f2140-978a-4ae4-af06-8e13b5048c68.png?alt=media&token=3f919229-cd00-4a45-ab4a-4c90111b1473" alt="Logo" class="logo">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="text" name="username_or_email" placeholder="Usuário" required>
+                <input type="password" name="password" placeholder="Senha" required>
+                <button type="submit" class="btn">Entrar</button>
+            </form>
+            <p>Não tem uma conta? <a href="#" id="showRegister">Registre-se</a></p>
+        </div>
 
-    <div id="registerContainer">
-        <h2>Registro</h2>
-        <form id="registerForm">
-            <input type="text" name="username" placeholder="Usuário" required>
-            <input type="email" name="email" placeholder="E-mail" required>
-            <input type="password" name="password" placeholder="Senha" required>
-            <button type="submit">Registrar</button>
-        </form>
-        <p>Já tem uma conta? <a href="#" id="showLogin">Faça login</a></p>
+        <div id="registerContainer" class="form-container">
+            <img src="https://firebasestorage.googleapis.com/v0/b/player-music-72d4d.appspot.com/o/img%2Ff24f2140-978a-4ae4-af06-8e13b5048c68.png?alt=media&token=3f919229-cd00-4a45-ab4a-4c90111b1473" alt="Logo" class="logo">
+            <h2>Registro</h2>
+            <form id="registerForm">
+                <input type="text" name="username" placeholder="Usuário" required>
+                <input type="email" name="email" placeholder="E-mail" required>
+                <input type="password" name="password" placeholder="Senha" required>
+                <button type="submit" class="btn">Registrar</button>
+            </form>
+            <p>Já tem uma conta? <a href="#" id="showLogin">Faça login</a></p>
+        </div>
     </div>
-
-    <script src="index.js"></script>
-    <script src="color.js"></script>
+<script src="index.js"></script>
+<script src="color.js"></script>
 </body>
 </html>
