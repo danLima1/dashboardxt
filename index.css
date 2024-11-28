@@ -34,39 +34,7 @@
     /* -----CARD SHADING----- */
     --box-shadow: 0 2rem 3rem var(--color-light);
 }
-#userSelect {
-    background-color: #000000; /* Fundo preto */
-    color: #FFFFFF;            /* Texto branco */
-    border: 1px solid #FFFFFF; /* Borda branca opcional */
-    padding: 8px;              /* Espaçamento interno */
-    border-radius: 4px;        /* Bordas arredondadas */
-    appearance: none;          /* Remove a aparência padrão (para alguns navegadores) */
-    -webkit-appearance: none;  /* Remove a aparência padrão no Safari */
-    -moz-appearance: none;     /* Remove a aparência padrão no Firefox */
-}
 
-/* Estilizando as opções do seletor (opcional) */
-#userSelect option {
-    background-color: #000000; /* Fundo preto */
-    color: #FFFFFF;            /* Texto branco */
-}
-
-#status_filtro {
-    background-color: #000000; /* Fundo preto */
-    color: #FFFFFF;            /* Texto branco */
-    border: 1px solid #FFFFFF; /* Borda branca opcional */
-    padding: 8px;              /* Espaçamento interno */
-    border-radius: 4px;        /* Bordas arredondadas */
-    appearance: none;          /* Remove a aparência padrão (para alguns navegadores) */
-    -webkit-appearance: none;  /* Remove a aparência padrão no Safari */
-    -moz-appearance: none;     /* Remove a aparência padrão no Firefox */
-}
-
-/* Estilizando as opções do seletor (opcional) */
-#status_filtro option {
-    background-color: #000000; /* Fundo preto */
-    color: #FFFFFF;            /* Texto branco */
-}
 input[type="date"] {
     color: white; /* Cor do texto */
     background-color: transparent; /* Fundo transparente */
@@ -893,7 +861,15 @@ select option {
     }
 }
 /* Estilos para os formulários */
-
+#loginContainer, #registerContainer {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: var(--color-white);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    display: none;
+}
 #loginContainer.active, #registerContainer.active {
     display: block;
 }
@@ -1033,7 +1009,17 @@ word-wrap: break-word; /* Ajusta a largura para caber no modal */
 
 
 
-
+/* Containers */
+#loginContainer, #registerContainer {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--color-white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+    transition: opacity 0.3s;
+}
 
 
 
@@ -1146,9 +1132,6 @@ thead th {
 }
 
 .status-pago {
-    color: var(--color-success);
+    color: rgb(178, 13, 211);
     font-weight: 600;
 }
-
-
-
