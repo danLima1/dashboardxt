@@ -863,7 +863,7 @@ select option {
 #loginContainer, #registerContainer {
     max-width: 400px;
     margin: 50px auto;
-    padding: 20px;
+    padding: 30px;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 8px;
     box-shadow: var(--box-shadow);
@@ -1008,15 +1008,7 @@ word-wrap: break-word; /* Ajusta a largura para caber no modal */
 
 
 
-#loginContainer, #registerContainer {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    box-shadow: var(--box-shadow);
-    display: none;
-}
+
 
 
 
