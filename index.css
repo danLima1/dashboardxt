@@ -994,6 +994,9 @@ box-shadow: var(--box-shadow);
 #openWebhooksModal{
     width: 100%;
 }
+#salvar{
+    width: 100%;
+}
 #logoutButton{
     width: 100%;
 }
