@@ -108,7 +108,6 @@ input[type="date"]::-moz-calendar-picker-indicator {
 
 html{
     font-size: 14px;
-    overflow-x: hidden; /* Esconde o conteúdo que excede a largura da tela */
 
 }
 
