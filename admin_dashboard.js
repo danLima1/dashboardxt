@@ -31,9 +31,11 @@ function loadUsers() {
         }
     })
     .then(response => {
-        if (response.status === 401) {
-            handleSessionExpired();
-            throw new Error('Unauthorized');
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                handleSessionExpired();
+            }
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return response.json();
     })
@@ -52,13 +54,15 @@ function loadUsers() {
     });
 }
 
+
 function handleSessionExpired() {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userRole");
     localStorage.removeItem("authToken");
-    alert("Sua sessão expirou. Por favor, faça login novamente.");
+    alert("Sua sessão expirou ou você não tem permissão para acessar esta página. Por favor, faça login novamente.");
     window.location.href = 'index.html';
 }
+
 
 document.getElementById('userSelect').addEventListener('change', function() {
     const selectedUserId = this.value;
