@@ -3,7 +3,8 @@ let vendasData = [];
 let currentOffset = 0;
 
 document.addEventListener("DOMContentLoaded", function() {
-    if (localStorage.getItem("userRole") !== "admin") {
+    const token = localStorage.getItem('authToken');
+    if (localStorage.getItem("userRole") !== "admin" || !token) {
         alert("Acesso não autorizado");
         window.location.href = 'index.html';
         return;
@@ -22,10 +23,20 @@ function setDefaultDates() {
 }
 
 function loadUsers() {
+    const token = localStorage.getItem('authToken');
     fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/dashboard', {
-        credentials: 'include'
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.status === 401) {
+            handleSessionExpired();
+            throw new Error('Unauthorized');
+        }
+        return response.json();
+    })
     .then(data => {
         usersData = data;
         const userSelect = document.getElementById('userSelect');
@@ -39,6 +50,14 @@ function loadUsers() {
     .catch(error => {
         console.error('Erro ao carregar usuários:', error);
     });
+}
+
+function handleSessionExpired() {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("authToken");
+    alert("Sua sessão expirou. Por favor, faça login novamente.");
+    window.location.href = 'index.html';
 }
 
 document.getElementById('userSelect').addEventListener('change', function() {
@@ -57,14 +76,24 @@ document.getElementById('userSelect').addEventListener('change', function() {
 });
 
 function fetchDashboardData(userId) {
+    const token = localStorage.getItem('authToken');
     const dataInicioInput = document.querySelector('#data_inicio');
     const dataFimInput = document.querySelector('#data_fim');
     const dataInicio = dataInicioInput.value;
     const dataFim = dataFimInput.value;
     fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/user/${userId}/dashboard?day_start=${dataInicio}&day_end=${dataFim}`, {
-        credentials: 'include'
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.status === 401) {
+            handleSessionExpired();
+            throw new Error('Unauthorized');
+        }
+        return response.json();
+    })
     .then(data => {
         renderDashboardData(data);
         vendasData = data.vendas_data;
@@ -182,24 +211,11 @@ document.getElementById('confirmar').addEventListener('click', function() {
     updateDashboard();
 });
 
-document.getElementById('logoutButton').addEventListener('click', async function() {
-    try {
-        const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/logout', {
-            method: 'POST',
-            credentials: 'include'
-        });
-        if (response.ok) {
-            localStorage.removeItem("isLoggedIn");
-            localStorage.removeItem("userRole");
-            window.location.href = 'index.html';
-        } else {
-            const result = await response.json();
-            alert(result.message || 'Erro ao fazer logout.');
-        }
-    } catch (error) {
-        console.error('Erro ao fazer logout:', error);
-        alert('Erro ao fazer logout. Por favor, tente novamente.');
-    }
+document.getElementById('logoutButton').addEventListener('click', function() {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("authToken");
+    window.location.href = 'index.html';
 });
 
 document.getElementById('addCreditsButton').addEventListener('click', async function() {
@@ -222,12 +238,19 @@ document.getElementById('addCreditsButton').addEventListener('click', async func
     messageDiv.textContent = '';
     messageDiv.style.display = 'none';
     try {
+        const token = localStorage.getItem('authToken');
         const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/admin/add-credits', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: parseInt(userId), amount: creditAmount }),
-            credentials: 'include'
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_id: parseInt(userId), amount: creditAmount })
         });
+        if (response.status === 401) {
+            handleSessionExpired();
+            return;
+        }
         const result = await response.json();
         if (result.status === 'success') {
             messageDiv.className = 'message-container success';
