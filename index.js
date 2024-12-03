@@ -30,18 +30,16 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         username_or_email: formData.get('username_or_email'),
         password: formData.get('password')
     };
-
     const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        credentials: 'include'
+        body: JSON.stringify(data)
     });
-
     const result = await response.json();
     if (result.status === 'success') {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("userRole", result.role);
+        localStorage.setItem("authToken", result.token);
         if (result.role === 'admin') {
             window.location.href = 'admin_dashboard.html';
         } else {
@@ -60,13 +58,11 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         email: formData.get('email'),
         password: formData.get('password')
     };
-
     const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     });
-
     const result = await response.json();
     if (result.status === 'success') {
         alert('Registro realizado com sucesso! Faça login.');
