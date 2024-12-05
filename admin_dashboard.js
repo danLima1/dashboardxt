@@ -7,9 +7,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const userRole = localStorage.getItem("userRole");
     const currentPath = window.location.pathname;
 
-    if ((userRole !== "admin" || !token) && !currentPath.endsWith('index.html')) {
-        alert("Acesso não autorizado");
-        window.location.href = 'index.html';
+    if ((userRole !== "admin" || !token) && currentPath !== '/index.html' && currentPath !== '/') {
+        handleSessionExpired();
         return;
     }
 
@@ -66,7 +65,9 @@ function handleSessionExpired() {
     localStorage.removeItem("userRole");
     localStorage.removeItem("authToken");
     alert("Sua sessão expirou ou você não tem permissão para acessar esta página. Por favor, faça login novamente.");
-    window.location.href = 'index.html';
+    setTimeout(function() {
+        window.location.href = 'index.html';
+    }, 0);
 }
 
 document.getElementById('userSelect').addEventListener('change', function() {
