@@ -4,13 +4,20 @@ let currentOffset = 0;
 
 document.addEventListener("DOMContentLoaded", function() {
     const token = localStorage.getItem('authToken');
-    if (localStorage.getItem("userRole") !== "admin" || !token) {
+    const userRole = localStorage.getItem("userRole");
+    const currentPath = window.location.pathname;
+
+    if ((userRole !== "admin" || !token) && !currentPath.endsWith('index.html')) {
         alert("Acesso não autorizado");
         window.location.href = 'index.html';
         return;
     }
-    loadUsers();
-    setDefaultDates();
+
+    // Carrega os usuários somente se o usuário for um admin autenticado
+    if (userRole === "admin" && token) {
+        loadUsers();
+        setDefaultDates();
+    }
 });
 
 function setDefaultDates() {
@@ -54,7 +61,6 @@ function loadUsers() {
     });
 }
 
-
 function handleSessionExpired() {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userRole");
@@ -62,7 +68,6 @@ function handleSessionExpired() {
     alert("Sua sessão expirou ou você não tem permissão para acessar esta página. Por favor, faça login novamente.");
     window.location.href = 'index.html';
 }
-
 
 document.getElementById('userSelect').addEventListener('change', function() {
     const selectedUserId = this.value;
