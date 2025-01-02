@@ -2,129 +2,649 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="index.css">
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pZw1XHhTKE0t6ZVq3VnEgl5E1I6Gx5ZsXed6eapwG3NLMdQv2unBb3mABJkPmbgZl7TqlhQwX1dEPN5P8SR1wA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Recuperação</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Koulen&family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        /* Seus estilos existentes */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-        /* Estilos para o aviso */
-        .email-warning {
-            background-color: #000000;
-            border: 1px solid #8b66d1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            color: #ffffff;
+        :root {
+            --color-primary: #7380ec;
+            --color-secondary: #5c6bc0;
+            --color-success: #66bb6a;
+            --color-danger: #e57373;
+            --color-warning: #ffbb55;
+            --color-info-dark: #7d8da1;
+            --color-dark-variant: #677483;
+            
+            --card-border-radius: 2rem;
+            --border-radius-1: 0.4rem;
+            --border-radius-2: 0.8rem;
+            --border-radius-3: 1.2rem;
+            
+            --card-padding: 1.8rem;
+            --padding-1: 1.2rem;
+            
+            --box-shadow: 0 2rem 3rem rgba(132, 139, 200, 0.18);
+            
+            --background-color: #0F172A;
+            --card-background: rgba(30, 41, 59, 0.5);
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
         }
 
-        /* Estilos para o campo de senha com o ícone de olho */
-        .password-container {
+        body {
+            font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            background: #000000;
+            color: var(--text-primary);
+            padding: 0;
+            line-height: 1.6;
             position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .password-container input {
+            overflow-x: hidden;
+            overflow-y: auto;
             width: 100%;
-            padding-right: 30px;
+            max-width: 100vw;
         }
 
-        .password-container .toggle-password {
+        body::before {
+            content: '';
             position: absolute;
-            right: 10px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 80% 20%, rgba(30, 144, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(138, 43, 226, 0.15) 0%, transparent 40%);
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+            overflow-x: hidden;
+        }
+
+        .insights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric {
+            width: 100%;
+            min-width: unset;
+            padding: 1.5rem;
+            background: var(--card-background);
+            border-radius: var(--card-border-radius);
+            margin-top: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 300ms ease;
+        }
+
+        .metric:hover {
+            box-shadow: none;
+            transform: translateY(-5px);
+        }
+
+        .metric h3 {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .metric h1 {
+            color: var(--color-primary);
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        button {
+            background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+            color: var(--text-primary);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            color: #888;
-            font-size: 1.2rem;
-            transition: color 0.3s;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: all 300ms ease;
+            min-width: unset;
+            white-space: nowrap;
         }
 
-        .password-container .toggle-password:hover {
-            color: #333;
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(115, 128, 236, 0.25);
         }
 
-        /* Estilos para mensagens de feedback */
+        .recent-orders {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 2rem;
+            background: var(--card-background);
+            border-radius: var(--card-border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .recent-orders table {
+            width: 100%;
+            min-width: unset;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        tbody tr {
+            transition: all 300ms ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .date, .tabs {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .date input[type="date"],
+            .tabs select,
+            button {
+                width: 100%;
+            }
+
+            .metric {
+                padding: 1rem;
+            }
+
+            .metric h1 {
+                font-size: 1.5rem;
+            }
+
+            .modal-content {
+                margin: 10px;
+                padding: 15px;
+                width: calc(100% - 20px);
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .buttons button {
+                width: 100%;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 0.25rem;
+            }
+
+            .metric h1 {
+                font-size: 1.2rem;
+            }
+
+            .metric h3 {
+                font-size: 0.8rem;
+            }
+
+            .controls {
+                padding: 0.5rem;
+            }
+
+            .modal-content {
+                margin: 5px;
+                padding: 10px;
+            }
+
+            th, td {
+                padding: 0.25rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Estilos específicos do dashboard */
+        .controls {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: var(--card-background);
+            border-radius: var(--card-border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .controls input[type="date"] {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .controls input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        .status-pendente {
+            color: var(--color-danger);
+            font-weight: 600;
+        }
+
+        .status-pago {
+            color: var(--color-success);
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .modal-content {
+            position: relative;
+            background: var(--card-background);
+            margin: 20px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            border-radius: var(--card-border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: var(--card-background);
+            z-index: 1;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            margin: 0;
+        }
+
+        .close-modal {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 300ms ease;
+        }
+
+        .close-modal:hover {
+            color: var(--color-primary);
+        }
+
+        .modal-body {
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .modal-body code {
+            display: block;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--color-primary);
+            font-weight: 500;
+            margin-bottom: 1rem;
+            word-wrap: break-word;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .email-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            color: var(--color-warning);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
         .message-container {
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
             display: none;
         }
 
         .message-container.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(102, 187, 106, 0.1);
+            border: 1px solid rgba(102, 187, 106, 0.2);
+            color: var(--color-success);
         }
 
         .message-container.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(229, 115, 115, 0.1);
+            border: 1px solid rgba(229, 115, 115, 0.2);
+            color: var(--color-danger);
         }
 
-        /* Media queries para responsividade */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                padding: 10px;
+        @media screen and (max-width: 768px) {
+            .modal-content {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+                position: fixed;
+                top: 0;
+                left: 0;
             }
+
             .insights {
+                display: flex;
                 flex-direction: column;
+                gap: 1rem;
             }
+
             .metric {
                 width: 100% !important;
-                margin-bottom: 20px;
+                margin: 0 !important;
             }
+
+            .recent-orders {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .recent-orders table {
+                width: 100%;
+                min-width: 600px;
+            }
+
+            .recent-orders th,
+            .recent-orders td {
+                white-space: nowrap;
+                padding: 0.75rem 1rem;
+            }
+
+            .insights[style] {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: unset !important;
+            }
+
+            .metric[style] {
+                width: 100% !important;
+                margin: 0.5rem 0 !important;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .modal-content {
+                padding: 1rem;
+            }
+
+            .modal-body {
+                padding: 1rem 0;
+            }
+
+            .metric h1 {
+                font-size: 1.5rem;
+            }
+
+            .metric h3 {
+                font-size: 0.9rem;
+            }
+
+            .recent-orders th,
+            .recent-orders td {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Ajustes para formulários em modais */
+        .modal form {
+            width: 100%;
+        }
+
+        .modal form input,
+        .modal form select {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* Ajuste para scroll apenas no modal quando aberto */
+        body.modal-open {
+            overflow: hidden;
+            padding-right: 15px;
+        }
+
+        .modal-open .modal {
+            overflow-y: auto;
+        }
+
+        /* Estilos para o formulário dentro do modal */
+        .modal form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .modal form label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal form input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 300ms ease;
+        }
+
+        .modal form input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(115, 128, 236, 0.12);
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-right: 40px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 300ms ease;
+        }
+
+        .toggle-password:hover {
+            color: var(--color-primary);
+        }
+
+        /* Estilos para selects */
+        select {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 300ms ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+            padding-right: 32px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(115, 128, 236, 0.12);
+        }
+
+        select option {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            padding: 8px;
+        }
+
+        /* Ajustes de responsividade adicionais */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
             .controls {
                 flex-direction: column;
-                align-items: stretch;
+                padding: 1rem;
             }
-            .controls .date,
-            .controls .tabs {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-            .controls .confirm-btn {
+
+            .date {
+                flex-direction: column;
                 width: 100%;
             }
+
+            .date label {
+                margin-bottom: 0.5rem;
+            }
+
+            .date input[type="date"] {
+                width: 100%;
+            }
+
+            .tabs {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .tabs label {
+                margin-bottom: 0.5rem;
+            }
+
+            select {
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
             .buttons {
                 flex-direction: column;
-                gap: 10px;
+                gap: 0.5rem;
+            }
+
+            #openWebhooksModal,
+            #openEmailConfigModal {
+                width: 100%;
+            }
+
+            .add-credits-form {
+                flex-direction: column;
+            }
+
+            .add-credits-form input,
+            .add-credits-form button {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Containers de Login e Registro -->
-    <div id="loginContainer">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <input type="text" name="username_or_email" placeholder="Celular" required>
-            <input type="password" name="password" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
-        </form>
-        <p>Não tem uma conta? <a href="#" id="showRegister">Registre-se</a></p>
-    </div>
-
-    <div id="registerContainer">
-        <h2>Registro</h2>
-        <form id="registerForm">
-            <input type="text" name="username" placeholder="Celular" required>
-            <input type="email" name="email" placeholder="E-mail" required>
-            <input type="password" name="password" placeholder="Senha" required>
-            <button type="submit">Registrar</button>
-        </form>
-        <p>Já tem uma conta? <a href="#" id="showLogin">Faça login</a></p>
-    </div>
-
     <!-- Container da Dashboard -->
-    <div class="container" id="dashboardContainer" style="max-width: 1200px; margin: 0 auto; padding: 20px; display: none;">
+    <div class="container" id="dashboardContainer">
         <main>
             <h1 style="color: var(--color-primary); font-size: 2rem; font-weight: 800;">Painel de Recuperação</h1>
 
@@ -150,7 +670,7 @@
             </div>
             
             <!-- Webhooks Modal -->
-            <div id="webhooksModal" class="modal">
+            <div id="webhooksModal" class="modal" style="display: none;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2>Configuração de Webhooks</h2>
@@ -171,7 +691,7 @@
             </div>
 
             <!-- Email Configuration Modal -->
-            <div id="emailConfigModal" class="modal">
+            <div id="emailConfigModal" class="modal" style="display: none;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2>Configuração de Email</h2>
@@ -198,12 +718,10 @@
                             <div class="password-container">
                                 <input type="password" id="email_password" name="email_password" placeholder="********" required>
                                 <svg id="toggle_password_icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#888" class="toggle-password">
-                                    <!-- Ícone de Olho Aberto -->
                                     <path d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 13c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
                                 </svg>
                             </div>
-                            
                             
                             <label for="from_name">Nome de Exibição:</label>
                             <input type="text" id="from_name" name="from_name" placeholder="nome da empresa ou algo como 'Finalize o Pagamento'">
@@ -225,7 +743,7 @@
 
                 <div class="tabs" style="display: flex; gap: 10px;">
                     <label for="status_filtro" style="color: var(--color-dark); font-size: 1rem;">Status:</label>
-                    <select id="status_filtro" onchange="updateDashboard()" style="padding: 8px; border-radius: 4px; background-color: black;">
+                    <select id="status_filtro" onchange="updateDashboard()">
                         <option value="todos">Todos</option>
                         <option value="pendente">Pendente</option>
                         <option value="recuperado">Recuperado</option>
@@ -316,90 +834,51 @@
                 if (userRole === "admin") {
                     window.location.href = 'admin_dashboard.html';
                 } else {
-                    document.getElementById("loginContainer").style.display = "none";
-                    document.getElementById("dashboardContainer").style.display = "block";
                     fetchDashboardData(); // Busca os dados da dashboard
                 }
             } else {
-                document.getElementById("loginContainer").style.display = "block";
+                window.location.href = 'index.html'; // Redireciona para a página de login
             }
         });
-    
-        // JavaScript para alternar entre login e registro
-        document.getElementById('showRegister').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('loginContainer').classList.remove('active');
-            document.getElementById('registerContainer').classList.add('active');
+
+        // Botão de logout
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userRole");
+            localStorage.removeItem("authToken");
+            window.location.href = 'index.html';
         });
+
+        // Variáveis globais
+        let vendasData = [];
+        let currentOffset = 0;
+
+        function formatDateBR(dateStr) {
+            if (!dateStr) return 'N/A';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        function compareDates(a, b) {
+            const dateA = new Date(a);
+            const dateB = new Date(b);
+            return dateB - dateA;
+        }
+
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
     
-        document.getElementById('showLogin').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('registerContainer').classList.remove('active');
-            document.getElementById('loginContainer').classList.add('active');
-        });
-    
-        // Mostrar o formulário de login inicialmente
-        document.getElementById('loginContainer').classList.add('active');
-    
-        // Manipulação do formulário de login
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const data = {
-                username_or_email: formData.get('username_or_email'),
-                password: formData.get('password')
-            };
-    
-            const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-    
-            const result = await response.json();
-            if (result.status === 'success') {
-                localStorage.setItem("isLoggedIn", "true"); // Salva o status de login
-                localStorage.setItem("userRole", result.role); // Salva o papel do usuário
-                localStorage.setItem("authToken", result.token); // Salva o token de autenticação
-                if (result.role === 'admin') {
-                    window.location.href = 'admin_dashboard.html'; // Redireciona para o dashboard admin
-                } else {
-                    document.getElementById('loginContainer').style.display = 'none';
-                    document.getElementById('dashboardContainer').style.display = 'block';
-                    fetchDashboardData();
-                }
-            } else {
-                alert(result.message);
-            }
-        });
-    
-        // Manipulação do formulário de registro
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const data = {
-                username: formData.get('username'),
-                email: formData.get('email'),
-                password: formData.get('password')
-            };
-    
-            const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-    
-            const result = await response.json();
-            if (result.status === 'success') {
-                alert('Registro realizado com sucesso! Faça login.');
-                document.getElementById('registerContainer').classList.remove('active');
-                document.getElementById('loginContainer').classList.add('active');
-            } else {
-                alert(result.message);
-            }
-        });
-    
-        async function fetchDashboardData(dataInicio = null, dataFim = null) {
+        function setDefaultDates() {
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const dataInicioInput = document.querySelector('#data_inicio');
+            const dataFimInput = document.querySelector('#data_fim');
+            dataInicioInput.value = firstDayOfMonth.toISOString().split('T')[0];
+            dataFimInput.value = today.toISOString().split('T')[0];
+        }
+
+        async function fetchDashboardData() {
             try {
                 const token = localStorage.getItem('authToken');
                 const response = await fetch('https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard', {
@@ -408,30 +887,22 @@
                         'Content-Type': 'application/json'
                     }
                 });
-    
+
                 if (response.status === 401) {
                     handleSessionExpired();
                     return;
                 }
-    
+
                 const data = await response.json();
-    
+
                 if (data.webhook_token) {
                     document.getElementById('webhookAbandono').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook2/${data.webhook_token}`;
                     document.getElementById('webhookPagamento').textContent = `https://recuperacao-3e9d5efa7a2e.herokuapp.com/webhook-pagamento/${data.webhook_token}`;
                 }
-    
-                // Atualiza o saldo de créditos no dashboard
+
                 document.getElementById('userCredits').textContent = data.credits;
-    
-                const today = new Date();
-                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-    
-                document.querySelector('#data_inicio').value = firstDay;
-                document.querySelector('#data_fim').value = lastDay;
-    
-                await updateDashboard(firstDay, lastDay);
+                setDefaultDates();
+                updateDashboard();
             } catch (error) {
                 console.error("Erro ao buscar dados do dashboard:", error);
             }
@@ -447,120 +918,116 @@
             document.getElementById("loginContainer").style.display = "block";
         }
     
-        // Botão de logout
-        document.getElementById('logoutButton').addEventListener('click', function() {
-            localStorage.removeItem("isLoggedIn"); // Remove o status de login
-            localStorage.removeItem("userRole"); // Remove o papel do usuário
-            localStorage.removeItem("authToken"); // Remove o token de autenticação
-            window.location.href = 'index.html'; // Redireciona para index.html
-        });
-    
-        // Variáveis globais
-        let vendasData = [];
-        let currentOffset = 0;
-    
-        function formatDateBR(dateStr) {
-            if (!dateStr) return 'N/A';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('pt-BR');
-        }
-    
-        function compareDates(a, b) {
-            const dateA = new Date(a);
-            const dateB = new Date(b);
-            return dateB - dateA;
-        }
-    
-        function formatCurrency(value) {
-            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-    
-        async function updateDashboard(dataInicio = null, dataFim = null) {
+        async function updateDashboard() {
             try {
                 const token = localStorage.getItem('authToken');
-                if (!dataInicio || !dataFim) {
-                    dataInicio = document.querySelector('#data_inicio').value;
-                    dataFim = document.querySelector('#data_fim').value;
-                }
-    
+                const dataInicioInput = document.querySelector('#data_inicio');
+                const dataFimInput = document.querySelector('#data_fim');
+                const dataInicio = dataInicioInput.value;
+                const dataFim = dataFimInput.value;
                 const statusFiltro = document.querySelector('#status_filtro').value;
-    
-                let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`, {
+
+                let statusResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/dashboard?day_start=${dataInicio}&day_end=${dataFim}`, {
                     headers: {
                         'Authorization': 'Bearer ' + token,
                         'Content-Type': 'application/json'
                     }
                 });
+
                 if (statusResponse.status === 401) {
                     handleSessionExpired();
                     return;
                 }
+
                 let statusData = await statusResponse.json();
-    
-                document.querySelector('.carrinhos-abandonados').textContent = statusData.carrinhos_abandonados;
-                document.querySelector('.vendas-recuperadas').textContent = statusData.vendas_recuperadas;
-                document.querySelector('.dinheiro-recuperado').textContent = formatCurrency(statusData.total_dinheiro_recuperado);
-    
-                // Carrega e exibe os dados de vendas recentes na tabela
+                renderDashboardData(statusData);
                 await loadVendasData(dataInicio, dataFim, statusFiltro);
-                updateKPIs(statusData);
             } catch (error) {
                 console.error('Erro ao atualizar o dashboard:', error);
             }
         }
     
+        function renderDashboardData(statusData) {
+            document.querySelector('.carrinhos-abandonados').textContent = statusData.carrinhos_abandonados || '0';
+            document.querySelector('.vendas-recuperadas').textContent = statusData.vendas_recuperadas || '0';
+            document.querySelector('.dinheiro-recuperado').textContent = formatCurrency(statusData.total_dinheiro_recuperado || 0);
+
+            const taxaRecuperacao = (statusData.vendas_recuperadas / statusData.carrinhos_abandonados) * 100 || 0;
+            document.querySelector('#taxaRecuperacao').textContent = taxaRecuperacao.toFixed(2) + '%';
+
+            const valorMedioRecuperacao = statusData.total_dinheiro_recuperado / statusData.vendas_recuperadas || 0;
+            document.querySelector('#valorMedioRecuperacao').textContent = formatCurrency(valorMedioRecuperacao);
+
+            let tempoMedioRecuperacao = parseFloat(statusData.tempo_medio_recuperacao || 0);
+            if (isNaN(tempoMedioRecuperacao)) {
+                tempoMedioRecuperacao = 0;
+            }
+            document.querySelector('#tempoMedioRecuperacao').textContent = tempoMedioRecuperacao.toFixed(2) + ' dias';
+        }
+
         async function loadVendasData(dataInicio, dataFim, statusFiltro) {
             try {
                 const token = localStorage.getItem('authToken');
-                let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio.split('-')[2]}&day_end=${dataFim.split('-')[2]}&month=${dataInicio.split('-')[1]}&year=${dataInicio.split('-')[0]}`, {
+                let vendasResponse = await fetch(`https://recuperacao-3e9d5efa7a2e.herokuapp.com/vendas-pendentes?day_start=${dataInicio}&day_end=${dataFim}`, {
                     headers: {
                         'Authorization': 'Bearer ' + token,
                         'Content-Type': 'application/json'
                     }
                 });
+
                 if (vendasResponse.status === 401) {
                     handleSessionExpired();
                     return;
                 }
+
                 vendasData = await vendasResponse.json();
-    
-                if (statusFiltro !== 'todos') {
-                    vendasData = vendasData.filter(venda => venda.status === statusFiltro);
+                
+                if (vendasData && vendasData.length > 0) {
+                    if (statusFiltro !== 'todos') {
+                        vendasData = vendasData.filter(venda => venda.status === statusFiltro);
+                    }
+
+                    vendasData.sort((a, b) => {
+                        let dataA = a.status === 'recuperado' ? a.data_recuperacao : a.data_abandono;
+                        let dataB = b.status === 'recuperado' ? b.data_recuperacao : b.data_abandono;
+                        return new Date(dataB) - new Date(dataA);
+                    });
+
+                    document.querySelector('.recent-orders tbody').innerHTML = '';
+                    currentOffset = 0;
+                    loadMoreData();
+
+                    if (vendasData.length > currentOffset) {
+                        document.querySelector('.recent-orders a').style.display = 'block';
+                    } else {
+                        document.querySelector('.recent-orders a').style.display = 'none';
+                    }
+                } else {
+                    document.querySelector('.recent-orders tbody').innerHTML = '<tr><td colspan="4">Nenhum pedido encontrado.</td></tr>';
+                    document.querySelector('.recent-orders a').style.display = 'none';
                 }
-    
-                vendasData.sort((a, b) => {
-                    let dataA = a.status === 'recuperado' ? a.data_recuperacao : a.data_abandono;
-                    let dataB = b.status === 'recuperado' ? b.data_recuperacao : b.data_abandono;
-                    return compareDates(dataA, dataB);
-                });
-    
-                document.querySelector('.recent-orders tbody').innerHTML = '';
-                currentOffset = 0;
-                loadMoreData(); // Carrega mais dados para exibir na tabela
             } catch (error) {
                 console.error("Erro ao carregar dados de vendas:", error);
+                document.querySelector('.recent-orders tbody').innerHTML = '<tr><td colspan="4">Erro ao carregar dados.</td></tr>';
+                document.querySelector('.recent-orders a').style.display = 'none';
             }
         }
     
         function renderTableData(startIndex, endIndex) {
             let tabelaVendas = document.querySelector('.recent-orders tbody');
-    
             for (let i = startIndex; i < endIndex && i < vendasData.length; i++) {
                 let venda = vendasData[i];
-                let statusClass = venda.status === 'recuperado' ? 'status-pago' : 'status-pendente';
+                let statusClass = venda.status === 'recuperado' ? 'primary' : 'danger';
                 let statusLabel = venda.status === 'recuperado' ? 'Pago' : 'Pendente';
-    
                 let data = venda.status === 'recuperado' ? venda.data_recuperacao : venda.data_abandono;
                 let dataFormatada = formatDateBR(data);
-    
                 let row = `
                     <tr>
-                        <td>${venda.full_name}</td>
+                        <td>${venda.full_name || 'N/A'}</td>
                         <td>${dataFormatada}</td>
-                        <td>${venda.transaction_id}</td>
+                        <td>${venda.transaction_id || 'N/A'}</td>
                         <td class="${statusClass}">${statusLabel}</td>
-                        <td>
-                        </td>
+                        <td></td>
                     </tr>
                 `;
                 tabelaVendas.insertAdjacentHTML('beforeend', row);
@@ -568,24 +1035,31 @@
         }
     
         function loadMoreData() {
+            if (!vendasData || vendasData.length === 0) {
+                console.warn('Nenhum dado de vendas para exibir.');
+                return;
+            }
             let startIndex = currentOffset;
             let endIndex = currentOffset + 30;
             renderTableData(startIndex, endIndex);
             currentOffset = endIndex;
-    
             if (currentOffset >= vendasData.length) {
                 document.querySelector('.recent-orders a').style.display = 'none';
             }
         }
     
         function updateKPIs(statusData) {
-            const taxaRecuperacao = (statusData.vendas_recuperadas / statusData.carrinhos_abandonados) * 100 || 0;
+            const carrinhos = statusData.carrinhos_abandonados || 0;
+            const vendas = statusData.vendas_recuperadas || 0;
+            const dinheiro = statusData.total_dinheiro_recuperado || 0;
+    
+            const taxaRecuperacao = carrinhos > 0 ? (vendas / carrinhos) * 100 : 0;
             document.querySelector('#taxaRecuperacao').textContent = taxaRecuperacao.toFixed(2) + '%';
     
-            const valorMedioRecuperacao = (statusData.total_dinheiro_recuperado / statusData.vendas_recuperadas) || 0;
+            const valorMedioRecuperacao = vendas > 0 ? dinheiro / vendas : 0;
             document.querySelector('#valorMedioRecuperacao').textContent = formatCurrency(valorMedioRecuperacao);
     
-            const tempoMedioRecuperacao = statusData.tempo_medio_recuperacao;
+            const tempoMedioRecuperacao = statusData.tempo_medio_recuperacao || 0;
             const diasInteiros = Math.floor(tempoMedioRecuperacao);
             const horas = Math.round((tempoMedioRecuperacao - diasInteiros) * 24);
     
@@ -598,21 +1072,32 @@
     
             document.querySelector('#tempoMedioRecuperacao').textContent = displayTempoRecuperacao;
         }
+
+        // Controle de scroll do modal
+        function openModal(modalId) {
+            document.body.classList.add('modal-open');
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.body.classList.remove('modal-open');
+            document.getElementById(modalId).style.display = 'none';
+        }
     
         // Webhooks Modal
         document.getElementById('openWebhooksModal').addEventListener('click', function () {
-            document.getElementById('webhooksModal').style.display = 'block';
+            openModal('webhooksModal');
             document.getElementById('webhookAbandonoModal').textContent = document.getElementById('webhookAbandono').textContent;
             document.getElementById('webhookPagamentoModal').textContent = document.getElementById('webhookPagamento').textContent;
         });
     
         function closeWebhooksModal() {
-            document.getElementById('webhooksModal').style.display = 'none';
+            closeModal('webhooksModal');
         }
     
         // Email Configuration Modal
         document.getElementById('openEmailConfigModal').addEventListener('click', async function () {
-            document.getElementById('emailConfigModal').style.display = 'block';
+            openModal('emailConfigModal');
     
             // Limpa a mensagem de feedback anterior
             const messageDiv = document.getElementById('emailConfigMessage');
@@ -654,7 +1139,7 @@
         });
     
         function closeEmailConfigModal() {
-            document.getElementById('emailConfigModal').style.display = 'none';
+            closeModal('emailConfigModal');
         }
     
         window.onclick = function (event) {
