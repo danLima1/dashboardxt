@@ -700,19 +700,19 @@
                     <div class="modal-body">
                         <!-- Aviso Adicionado -->
                         <div class="email-warning">
-                            Recomendamos fortemente que você utilize um email profissional pago da Hostinger, pois ele possui dupla verificação contra spam, não nos responsabilizamos caso você utilize outro e-mail e a ferramenta não funcione como o esperado. Caso o seu email não seja da Hostinger, substitua os valores do servidor SMTP pela configuração correta do seu email. Para isso, pesquise no Google. a porta SMTP deixe a padrão (587)
+                            Recomendamos fortemente que você utilize um email profissional pago da hostgator, pois ele possui dupla verificação contra spam, não nos responsabilizamos caso você utilize outro e-mail e a ferramenta não funcione como o esperado. Caso o seu email não seja da hostgator, substitua os valores do servidor SMTP pela configuração correta do seu email. Para isso, pesquise no Google. a porta SMTP deixe a padrão (587)
                         </div>
                         <!-- Contêiner de Mensagens -->
                         <div id="emailConfigMessage" class="message-container"></div>
                         <form id="emailConfigForm">
                             <label for="smtp_server">Servidor SMTP:</label>
-                            <input type="text" id="smtp_server" name="smtp_server" value="smtp.hostinger.com" required>
+                            <input type="text" id="smtp_server" name="smtp_server" value="smtp.titan.email" required>
                             
                             <label for="smtp_port">Porta SMTP:</label>
                             <input type="number" id="smtp_port" name="smtp_port" value="587" required>
                             
                             <label for="email_username">Email (usuário):</label>
-                            <input type="email" id="email_username" name="email_username" placeholder="seuemail@hostinger.com" required>
+                            <input type="email" id="email_username" name="email_username" placeholder="seuemail@hostgator.com" required>
                             
                             <label for="email_password">Senha do Email (ou senha de aplicativo para e-mails google):</label>
                             <div class="password-container">
@@ -1119,7 +1119,7 @@
                 const result = await response.json();
     
                 if (result.status === 'success') {
-                    document.getElementById('smtp_server').value = result.smtp_server || 'smtp.hostinger.com';
+                    document.getElementById('smtp_server').value = result.smtp_server || 'smtp.hostgator.com';
                     document.getElementById('smtp_port').value = result.smtp_port || '587';
                     document.getElementById('email_username').value = result.email_username || '';
                     // Não preencha o campo de senha por segurança
@@ -1127,13 +1127,13 @@
                 } else {
                     console.warn('Erro ao obter configuração de email:', result.message);
                     // Define os valores padrão caso ocorra um erro
-                    document.getElementById('smtp_server').value = 'smtp.hostinger.com';
+                    document.getElementById('smtp_server').value = 'smtp.hostgator.com';
                     document.getElementById('smtp_port').value = '587';
                 }
             } catch (error) {
                 console.error('Erro ao obter configuração de email:', error);
                 // Define os valores padrão em caso de erro na requisição
-                document.getElementById('smtp_server').value = 'smtp.hostinger.com';
+                document.getElementById('smtp_server').value = 'smtp.hostgator.com';
                 document.getElementById('smtp_port').value = '587';
             }
         });
